@@ -3,6 +3,7 @@ import runpy
 #  Games
 pong = "games\pong.py"
 mine = "games\minesweeper.py"
+invade = "games\space_invaders\space_invaders.py"
 
 window = tkinter.Tk()
 window.title("Austin's Game Collection Menu!")

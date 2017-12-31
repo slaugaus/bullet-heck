@@ -1,20 +1,21 @@
 #  Featuring the real graphics! Wow!
-import sys
 import pygame
 from settings import Settings
 from ship import Ship
+import game_functions as gf
+
+
 def run_game():
     pygame.init()
-    ai_settings = Settings()
-    screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
+    si_settings = Settings()
+    screen = pygame.display.set_mode((si_settings.screen_width, si_settings.screen_height))
     pygame.display.set_caption("Space Invaders")
     #  Draw the ship.
-    ship = Ship(screen)
+    ship = Ship(si_settings, screen)
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-        screen.fill(ai_settings.bg_color)
-        ship.blitme()
-        pygame.display.flip()
+        gf.check_events(ship)
+        ship.update()
+        gf.update_screen(si_settings, screen, ship)
+
+
 run_game()
