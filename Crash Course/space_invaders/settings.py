@@ -7,3 +7,8 @@ class Settings():
         self.bg_color = (0, 0, 0)  # not really necessary
         #  Ship settings
         self.ship_speed_factor = 1.5  # in pixels per update during keypress
+        #  Bullet settings
+        self.bullet_speed_factor = 1
+        self.bullet_width = 3
+        self.bullet_height = 15
+        self.bullet_color = 0, 255, 0

@@ -8,7 +8,8 @@ import game_functions as gf
 def run_game():
     pygame.init()
     si_settings = Settings()
-    screen = pygame.display.set_mode((si_settings.screen_width, si_settings.screen_height))
+    screen = pygame.display.set_mode((si_settings.screen_width,
+                                      si_settings.screen_height))
     pygame.display.set_caption("Space Invaders")
     #  Draw the ship.
     ship = Ship(si_settings, screen)
