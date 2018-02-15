@@ -55,6 +55,8 @@ def check_keydown_events(event, si_settings, screen, ship, stats, sb, bullets):
         ship.moving_left = True
     elif event.key == pygame.K_SPACE:
         fire_bullet(si_settings, screen, ship, bullets)
+    elif event.key == pygame.K_b:
+        fire_bullet(si_settings, screen, ship, bullets)
     elif event.key == pygame.K_BACKQUOTE:
         print("Debug key found! Toggled w i d e  b u l l e t s!")
         si_settings.bullet_width = 500 if si_settings.bullet_width == 3 else 3

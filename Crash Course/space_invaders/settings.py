@@ -22,10 +22,10 @@ class Settings():
 
     def initialize_dynamic_settings(self):
         """Initialize game settings that can change."""
-        self.ship_speed_factor = 1.5  # in pixels per update during keypress
-        self.bullet_speed_factor = 3  # default: 3
-        self.alien_speed_factor = 0.75  # default: 1
-        self.alien_anim_frames = 60
+        self.ship_speed_factor = 5  # in pixels per update during keypress
+        self.bullet_speed_factor = 10  # default: 3
+        self.alien_speed_factor = 2  # default: 1
+        self.alien_anim_frames = 30
         # 1 is right, -1 is left.
         self.fleet_direction = 1
         # Scoring

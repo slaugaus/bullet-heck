@@ -21,6 +21,7 @@ def run_game():
     ship = Ship(si_settings, screen)
     bullets = Group()
     aliens = Group()
+    clock = pygame.time.Clock()
     # Create a fleet of aliens.
     gf.create_fleet(si_settings, screen, ship, aliens)
     # Create an instance to store game stats and make a scoreboard.
@@ -36,6 +37,8 @@ def run_game():
                               bullets)
             gf.update_aliens(si_settings, screen, stats, sb, ship, aliens,
                              bullets)
+            clock.tick(60)
+            print(clock.get_fps())
         gf.update_screen(si_settings, screen, stats, sb, ship, aliens, bullets,
                          play_button)
 

@@ -3,3 +3,8 @@ __pycache__/
 .ropeproject/
 Source Files/
 *.db
+build/
+dist/
+*.spec
+*.build
+*.exe
