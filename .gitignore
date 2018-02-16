@@ -1,10 +1,11 @@
 __pycache__/
-*.pyc
+unsure/
 .ropeproject/
 Source Files/
-*.db
 build/
 dist/
-*.spec
 *.build
+*.pyc
+*.db
+*.spec
 *.exe
