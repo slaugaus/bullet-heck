@@ -11,16 +11,16 @@ def run_game():
     settings = Settings()
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
-    pygame.display.set_caption("Bullet Heck")
+    pygame.display.set_caption("Bullet Heck!")
     ship = Ship(settings, screen)
     stars = Group()
     clock = pygame.time.Clock()
     if settings.gamepad_connected:
         gamepad = Joystick(settings.gamepad_id)
+        gamepad.init()
     else:
         gamepad = False
     while True:
-        gf.add_star(settings, screen, stars)
         gf.check_events(settings, screen, stars, ship, gamepad)
         gf.update_stars(settings, screen, stars)
         if settings.gamepad_connected:

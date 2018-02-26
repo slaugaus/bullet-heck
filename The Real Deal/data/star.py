@@ -9,7 +9,7 @@ class Star(Sprite):
         """Put a star somewhere on the screen."""
         super().__init__()
         self.screen = screen
-        self.image = pygame.image.load(('assets/images/star.png'))
+        self.image = pygame.image.load(('assets/star.png'))
         self.rect = self.image.get_rect()
         self.rect.right = settings.screen_width
         self.rect.bottom = random.randint(0, settings.screen_height)

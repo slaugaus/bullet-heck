@@ -64,13 +64,11 @@ def check_analog_events(event, gamepad, ship, settings):
         ship.an_up, ship.an_down = 0, 0
 
 
-def add_star(settings, screen, stars):
+def update_stars(settings, screen, stars):
+    """Update the starry background."""
     if len(stars) < settings.star_limit:
         new_star = Star(settings, screen)
         stars.add(new_star)
-
-
-def update_stars(settings, screen, stars):
     stars.update()
     for star in stars.copy():
         if star.rect.right <= 0:
