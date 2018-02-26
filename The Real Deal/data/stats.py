@@ -3,4 +3,3 @@ class Stats():
     def __init__(self, settings):
         """Initialize stats."""
         self.settings = settings
-        
