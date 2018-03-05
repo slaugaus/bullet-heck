@@ -19,7 +19,7 @@ def run_game():
         gamepad = Joystick(settings.gamepad_id)
         gamepad.init()
     else:
-        gamepad = False
+        gamepad = 0
     while True:
         gf.check_events(settings, screen, stars, ship, gamepad)
         gf.update_stars(settings, screen, stars)
@@ -28,7 +28,8 @@ def run_game():
         ship.update_digital(settings)
         gf.update_screen(settings, screen, stars, ship)
         clock.tick(settings.fps_limit)
-        # print(clock.get_fps())
+        if settings.show_fps:
+            print(clock.get_fps())
 
 
 run_game()

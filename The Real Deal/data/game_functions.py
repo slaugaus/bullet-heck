@@ -18,7 +18,7 @@ def check_events(settings, screen, stars, ship, gamepad):
 
 def check_keydown_events(event, settings, screen, stars, ship):
     """Respond to pressed keys."""
-    # Note: Any keypress limits are your keyboard's fault.
+    # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
         sys.exit()
     if event.key == pygame.K_RIGHT:
@@ -57,7 +57,7 @@ def check_analog_events(event, gamepad, ship, settings):
         ship.an_down = gamepad.get_axis(axis_y)
     if gamepad.get_axis(axis_y) <= -deadzone:
         ship.an_up = gamepad.get_axis(axis_y)
-    # If the stick is in the deadzone, make sure the ship s
+    # If the stick is in the deadzone, make sure the ship doesn't move.
     if -deadzone <= gamepad.get_axis(axis_x) <= deadzone:
         ship.an_left, ship.an_right = 0, 0
     if -deadzone <= gamepad.get_axis(axis_y) <= deadzone:

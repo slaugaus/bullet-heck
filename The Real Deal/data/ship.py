@@ -95,4 +95,3 @@ class Ship(Sprite):
         """Draw the ship and its hitbox."""
         self.screen.blit(self.image, self.rect)
         self.screen.blit(self.hb_image, self.hitbox)
-        # pygame.draw.circle(self.screen, (255, 0, 0), self.rect.center, 5)
