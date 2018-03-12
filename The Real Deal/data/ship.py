@@ -75,7 +75,7 @@ class Ship(Sprite):
         # Load the images.
         self.images = []
         self.image_list = os.listdir("assets/ship")
-        # Only load the images in the folder.
+        # Only load the images in the folder, not stuff like Thumbs.db.
         while len(self.image_list) > 30:
             self.image_list.pop()
         for filename in self.image_list:

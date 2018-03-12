@@ -2,38 +2,32 @@ import pickle
 
 
 class Settings():
-    """Stores settings for Bullet Heck."""
+    """Loads and stores settings for Bullet Heck."""
     def __init__(self):
-        """Load settings.pkl and convert the array to variables."""
+        """Load settings.pickle and convert the list to variables."""
         try:
-            file = open("../test.pkl", mode="r+b")
+            file = open("../settings.pickle", mode="r+b")
             vars = pickle.load(file)
-            print(vars)
-        except FileNotFoundError:
-            print("ERROR: Couldn't find settings.pkl!\n",
+            [self.gamepad_connected, self.screen_width, self.screen_height,
+             self.gamepad_id, self.deadzone, self.axis_x, self.axis_y,
+             self.hat_id, self.show_fps, self.show_debug] = vars
+            if self.show_debug:
+                print("Loaded settings:", vars)
+        except (FileNotFoundError, EOFError):
+            print("ERROR: Couldn't read settings.pickle!\n",
                   "Did you run the launcher?")
             quit()
-        # Resolution
-        self.screen_width = 1600
-        self.screen_height = 900
         # Colors
         self.bg_color = (0, 0, 0)
         # Performance
         self.star_limit = 100
         self.fps_limit = 60
-        self.show_fps = False
-        # Gamepad stuff
-        self.gamepad_connected = False
-        self.gamepad_id = 0
-        self.deadzone = 0.2
-        self.axis_x = 0
-        self.axis_y = 1
-        self.hat_id = 0
-
-        self.init_dynamic_settings()
-
-    def init_dynamic_settings(self):
-        """Initialize settings that might change at some point."""
+        # Movement
         self.ship_speed = 10
         self.ship_diag_speed = self.ship_speed * ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
+        # Bullets
+        self.bullet_color = (255, 0, 0)
+        self.bullet_speed = 20
+        self.bullet_width = 15
+        self.bullet_height = 3

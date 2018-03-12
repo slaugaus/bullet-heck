@@ -1,5 +1,4 @@
 __pycache__/
-unsure/
 .ropeproject/
 Source Files/
 build/
@@ -9,3 +8,4 @@ dist/
 *.db
 *.spec
 *.exe
+*.pickle

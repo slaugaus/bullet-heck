@@ -21,7 +21,7 @@ def run_game():
     else:
         gamepad = 0
     while True:
-        gf.check_events(settings, screen, stars, ship, gamepad)
+        gf.check_events(settings, screen, ship, gamepad)
         gf.update_stars(settings, screen, stars)
         if settings.gamepad_connected:
             ship.update_analog(settings)

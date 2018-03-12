@@ -18,14 +18,15 @@ sett_win = tk.Toplevel()
 sett_win.title("Settings")
 sett_win.protocol("WM_DELETE_WINDOW", sett_win.withdraw)
 sett_win.resizable(False, False)
-# Create and/or load settings.pkl
+# Create and/or load settings.pickle
 try:
-    file = open("settings.pkl", mode="r+b")
-    vars = pickle.load(file)
+    file = open("settings.pickle", mode="r+b")
+    vars_to_load = pickle.load(file)
+    file = open("settings.pickle", mode="w+b")
     settings_exist = True
-except FileNotFoundError:
-    file = open("settings.pkl", mode="w+b")
-    file = open("settings.pkl", mode="r+b")
+except (FileNotFoundError, EOFError):
+    file = open("settings.pickle", mode="w+b")
+    file = open("settings.pickle", mode="r+b")
     settings_exist = False
 # Variables that will be written to settings
 gamepad_connected = tk.BooleanVar(sett_win)
@@ -37,6 +38,9 @@ axis_x = tk.IntVar(sett_win)
 axis_y = tk.IntVar(sett_win)
 hat_id = tk.IntVar(sett_win)
 show_fps = tk.BooleanVar(sett_win)
+show_debug = tk.BooleanVar(sett_win)
+var_list = [gamepad_connected, screen_width, screen_height, gamepad_id,
+            deadzone, axis_x, axis_y, hat_id, show_fps, show_debug]
 # Set the default values of the variables
 if not settings_exist:
     gamepad_connected.set(False)
@@ -48,36 +52,40 @@ if not settings_exist:
     axis_y.set(1)
     hat_id.set(0)
     show_fps.set(False)
+    show_debug.set(False)
+else:
+    # Copy the loaded values to the Tkinter variables.
+    for var in var_list:
+        var.set(vars_to_load[var_list.index(var)])
 
 
-def launch(file="BulletHeck.py"):
-    """Run another .py."""
-    if file == "BulletHeck.py":
+def launch(target="BulletHeck.py"):
+    """Run another .py file, which should be BulletHeck.py."""
+    if target == "BulletHeck.py":
         sett_win.destroy()
         main_win.destroy()
-    os.chdir("data")
-    sys.path.append(os.getcwd())
-    runpy.run_path(file)
+        save_settings(False)
+        os.chdir("data")
+        sys.path.append(os.getcwd())
+    runpy.run_path(target)
 
 
 def save_settings(exit):
-    """Write all of the variables to settings.pkl."""
-    # (well right now it just prints them)
-    print("Gamepad:", gamepad_connected.get())
-    print("Width:", screen_width.get())
-    print("Height:", screen_height.get())
-    print("ID:", gamepad_id.get())
-    print("Deadzone:", deadzone.get())
-    print("X:", axis_x.get())
-    print("Y:", axis_y.get())
-    print("Dpad ID:", hat_id.get())
-    print("FPS shown?:", show_fps.get())
-    print()
+    """Write all of the variables to settings.pickle."""
+    global file
+    vars_to_save = [gamepad_connected.get(), screen_width.get(),
+                    screen_height.get(), gamepad_id.get(), deadzone.get(),
+                    axis_x.get(), axis_y.get(), hat_id.get(), show_fps.get(),
+                    show_debug.get()]
+    pickle.dump(vars_to_save, file)
+    # Close and reopen the file so pickle can actually modify it.
+    file.close()
+    file = open("settings.pickle", mode="r+b")
     if exit:
         sett_win.withdraw()
 
 
-# Define the image, buttons, and other stuff.
+# Define all of the widgets.
 # Main window
 title = Image.open("data/assets/logo.png")
 title = title.resize((400, 225), resample=Image.BICUBIC)
@@ -112,18 +120,19 @@ en5_lb = ttk.Label(page2, text="X axis ID:")
 en6 = ttk.Entry(page2, textvar=axis_y)
 en6_lb = ttk.Label(page2, text="Y axis ID:")
 en7 = ttk.Entry(page2, textvar=hat_id)
-en7_lb = ttk.Label(page2, text="Hat (dpad) ID:")
+en7_lb = ttk.Label(page2, text="Hat (D-pad) ID:")
 but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 
 page3 = tk.Frame(sett_win)
 page3.columnconfigure(0, weight=1)
-notebook.add(page3, text="Performance settings")
+notebook.add(page3, text="Logging settings")
 pg3_lb = ttk.Label(page3, text="Only change these if you need to.")
 cb2 = ttk.Checkbutton(page3, text="Show FPS in console", var=show_fps)
+cb3 = ttk.Checkbutton(page3, text="Show debug messages", var=show_debug)
 
-savesettings = ttk.Button(sett_win, text="Save settings",
-                          command=lambda: save_settings(False))
+save = ttk.Button(sett_win, text="Save settings",
+                  command=lambda: save_settings(False))
 exit = ttk.Button(sett_win, text="Exit", command=sett_win.withdraw)
 saveandexit = ttk.Button(sett_win, text="Save and Exit",
                          command=lambda: save_settings(True))
@@ -133,7 +142,7 @@ but_play.pack(fill=tk.X)
 but_settings.pack(fill=tk.X)
 # Settings window
 notebook.grid(columnspan=3)
-savesettings.grid(row=1, sticky="we")
+save.grid(row=1, sticky="we")
 exit.grid(row=1, column=1, sticky="we")
 saveandexit.grid(row=1, column=2, sticky="we")
 
@@ -158,9 +167,10 @@ but_gptest.grid(row=6, columnspan=2, sticky="we")
 
 pg3_lb.grid(columnspan=2)
 cb2.grid(row=1)
+cb3.grid(row=2)
 
 # Hide the settings window by default.
-# sett_win.withdraw()
+sett_win.withdraw()
 # Main loops
 main_win.mainloop()
 sett_win.mainloop()

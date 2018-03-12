@@ -3,20 +3,20 @@ import sys
 from star import Star
 
 
-def check_events(settings, screen, stars, ship, gamepad):
+def check_events(settings, screen, ship, gamepad):
     """Respond to key and mouse events."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, screen, stars, ship)
+            check_keydown_events(event, settings, screen, ship)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
         elif event.type == pygame.JOYAXISMOTION:
             check_analog_events(event, gamepad, ship, settings)
 
 
-def check_keydown_events(event, settings, screen, stars, ship):
+def check_keydown_events(event, settings, screen, ship):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
