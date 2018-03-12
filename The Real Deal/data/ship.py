@@ -42,14 +42,22 @@ class Ship(Sprite):
         # Don't call animate() twice with a gamepad connected.
         if not settings.gamepad_connected:
             self.animate()
+        # The ship should be moving the same speed when moving diagonally.
+        if (self.moving_up and self.moving_left or
+                self.moving_up and self.moving_right or
+                self.moving_down and self.moving_left or
+                self.moving_down and self.moving_right):
+            speed = settings.ship_speed * settings.diag_factor
+        else:
+            speed = settings.ship_speed
         if self.moving_right and self.rect.right < settings.screen_width:
-            self.centerx += settings.ship_speed
+            self.centerx += speed
         if self.moving_left and self.rect.left > 0:
-            self.centerx -= settings.ship_speed
+            self.centerx -= speed
         if self.moving_down and self.rect.bottom < settings.screen_height:
-            self.centery += settings.ship_speed
+            self.centery += speed
         if self.moving_up and self.rect.top > 0:
-            self.centery -= settings.ship_speed
+            self.centery -= speed
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hitbox.center = self.rect.center
@@ -82,7 +90,6 @@ class Ship(Sprite):
             image = pygame.image.load("assets/ship/" + filename)
             self.images.append(image)
         self.index = 0
-        self.current_frame = 0
 
     def animate(self):
         """Animate the ship."""

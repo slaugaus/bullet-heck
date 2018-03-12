@@ -24,10 +24,12 @@ class Settings():
         self.fps_limit = 60
         # Movement
         self.ship_speed = 10
-        self.ship_diag_speed = self.ship_speed * ((2 ** 0.5) / 2)  # (root2)/2
+        self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         # Bullets
         self.bullet_color = (255, 0, 0)
         self.bullet_speed = 20
         self.bullet_width = 15
         self.bullet_height = 3
+        self.bullet_limit = 50
+        self.bullet_delay = 10

@@ -14,7 +14,7 @@ class Bullet(Sprite):
         self.rect.centery = ship.rect.centery
         self.rect.right = ship.rect.right
         # Float the bullet's position, making it a decimal value.
-        self.y = float(self.rect.y)
+        self.x = float(self.rect.x)
 
         self.color = settings.bullet_color
         self.speed = settings.bullet_speed
@@ -22,7 +22,7 @@ class Bullet(Sprite):
     def update(self):
         """Move the bullet right."""
         # Update position
-        self.x += self.speed_factor
+        self.x += self.speed
         # Update the rect position.
         self.rect.x = self.x
 
