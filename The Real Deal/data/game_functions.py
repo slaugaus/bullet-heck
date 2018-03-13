@@ -2,36 +2,41 @@ import pygame
 import sys
 from star import Star
 from bullet import Bullet
-current_frame = 0
 
 
-def check_events(settings, screen, ship, gamepad, bullets):
-    """Respond to key and mouse events."""
-    check_held_keys(settings, screen, ship, bullets)
+def check_events(settings, screen, ship, gamepad, bullets, stats, sounds):
+    """Respond to key, gamepad, and mouse events."""
+    check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, screen, ship, bullets)
+            check_keydown_events(event, settings, ship)
         elif event.type == pygame.KEYUP:
-            check_keyup_events(event, settings, screen, ship, bullets)
+            check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
-            check_analog_events(event, gamepad, ship, settings)
+            check_analog_events(gamepad, ship, settings)
+        elif event.type == pygame.JOYHATMOTION:
+            check_hat_events(gamepad, ship, settings)
 
 
-def check_held_keys(settings, screen, ship, bullets):
-    global current_frame
+def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
     keys = pygame.key.get_pressed()
-    current_frame += 1
-    if keys[pygame.K_SPACE]:
-        if current_frame == 10:
-            fire_bullets(settings, screen, ship, bullets)
-            current_frame = 0
-    elif current_frame == 10:
-        current_frame = 0
+    """If spacebar or b key or A button are held, fire bullets,
+       waiting 10 frames between fires."""
+    if (((keys[pygame.K_SPACE] or keys[pygame.K_b]))
+            and stats.bullet_cooldown == 0):
+        fire_bullet(settings, screen, ship, bullets, sounds)
+        stats.bullet_cooldown = settings.bullet_cooldown
+    if settings.gamepad_connected:
+        if gamepad.get_button(settings.but_A) and stats.bullet_cooldown == 0:
+            fire_bullet(settings, screen, ship, bullets, sounds)
+            stats.bullet_cooldown = settings.bullet_cooldown
+    if stats.bullet_cooldown > 0:
+        stats.bullet_cooldown -= 1
 
 
-def check_keydown_events(event, settings, screen, ship, bullets):
+def check_keydown_events(event, settings, ship):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
@@ -46,7 +51,7 @@ def check_keydown_events(event, settings, screen, ship, bullets):
         ship.moving_up = True
 
 
-def check_keyup_events(event, settings, screen, ship, bullets):
+def check_keyup_events(event, settings, ship):
     """Respond to key releases."""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = False
@@ -58,7 +63,7 @@ def check_keyup_events(event, settings, screen, ship, bullets):
         ship.moving_up = False
 
 
-def check_analog_events(event, gamepad, ship, settings):
+def check_analog_events(gamepad, ship, settings):
     """Respond to analog stick movement."""
     deadzone = settings.deadzone
     axis_x = settings.axis_x
@@ -79,6 +84,24 @@ def check_analog_events(event, gamepad, ship, settings):
         ship.an_up, ship.an_down = 0, 0
 
 
+def check_hat_events(gamepad, ship, settings):
+    """Respond to hat events."""
+    hat = settings.hat_id
+    motion = gamepad.get_hat(hat)
+    if motion[0] == -1:
+        ship.moving_left = True
+    elif motion[0] == 1:
+        ship.moving_right = True
+    else:
+        ship.moving_left, ship.moving_right = False, False
+    if motion[1] == -1:
+        ship.moving_down = True
+    elif motion[1] == 1:
+        ship.moving_up = True
+    else:
+        ship.moving_down, ship.moving_up = False, False
+
+
 def update_stars(settings, screen, stars):
     """Update the starry background."""
     if len(stars) < settings.star_limit:
@@ -90,11 +113,11 @@ def update_stars(settings, screen, stars):
             stars.remove(star)
 
 
-def fire_bullets(settings, screen, ship, bullets):
+def fire_bullet(settings, screen, ship, bullets, sounds):
     if len(bullets) < settings.bullet_limit:
         new_bullet = Bullet(settings, screen, ship)
         bullets.add(new_bullet)
-        print("pew")
+        sounds.pew.play()
 
 
 def update_bullets(settings, screen, ship, bullets):

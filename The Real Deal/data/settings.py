@@ -10,9 +10,7 @@ class Settings():
             vars = pickle.load(file)
             [self.gamepad_connected, self.screen_width, self.screen_height,
              self.gamepad_id, self.deadzone, self.axis_x, self.axis_y,
-             self.hat_id, self.show_fps, self.show_debug] = vars
-            if self.show_debug:
-                print("Loaded settings:", vars)
+             self.hat_id, self.but_A, self.but_B, self.show_fps] = vars
         except (FileNotFoundError, EOFError):
             print("ERROR: Couldn't read settings.pickle!\n",
                   "Did you run the launcher?")
@@ -32,4 +30,4 @@ class Settings():
         self.bullet_width = 15
         self.bullet_height = 3
         self.bullet_limit = 50
-        self.bullet_delay = 10
+        self.bullet_cooldown = 5

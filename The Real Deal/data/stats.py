@@ -3,3 +3,5 @@ class Stats():
     def __init__(self, settings):
         """Initialize stats."""
         self.settings = settings
+        self.game_active = True
+        self.bullet_cooldown = 0
