@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 
 
 class Ship(Sprite):
-    def __init__(self, settings, screen):
+    def __init__(self, settings, screen, stats):
         """Initialize the ship and set its starting position."""
         super().__init__()
         self.screen = screen
@@ -18,8 +18,9 @@ class Ship(Sprite):
         self.hitbox = self.hb_image.get_rect()
         # Place the ship in the vertical middle with some padding.
         self.rect.centery = self.screen_rect.centery
-        self.rect.left = self.screen_rect.left + (settings.screen_width / 10)
+        self.rect.right = self.screen_rect.left
         self.hitbox.center = self.rect.center
+        self.ready = False
         # Store the ship's center as decimals.
         self.centerx = float(self.rect.centerx)
         self.centery = float(self.rect.centery)
@@ -32,13 +33,20 @@ class Ship(Sprite):
         self.an_up, self.an_down = 0, 0
         self.an_right, self.an_left = 0, 0
 
-    def reset_ship_pos(self, settings):
+    def reset_pos(self, settings):
         """Reset the ship's position."""
+        self.ready = False
         self.centery = self.screen_rect.centery
-        self.rect.left = self.screen_rect.left + (settings.screen_width / 10)
+        # same as setting self.rect.right to self.screen_rect.left
+        self.centerx = self.screen_rect.left - (self.rect.right - self.centerx)
 
     def update_digital(self, settings):
         """Animate the ship, then move it if the flags say to."""
+        if not self.ready:
+            if self.centerx < settings.screen_width / 10:
+                self.centerx += settings.ship_speed
+            else:
+                self.ready = True
         # Don't call animate() twice with a gamepad connected.
         if not settings.gamepad_connected:
             self.animate()
@@ -50,14 +58,18 @@ class Ship(Sprite):
             speed = settings.ship_speed * settings.diag_factor
         else:
             speed = settings.ship_speed
-        if self.moving_right and self.rect.right < settings.screen_width:
-            self.centerx += speed
-        if self.moving_left and self.rect.left > 0:
-            self.centerx -= speed
+        # If it's been animated in, allow horizontal movement.
+        if self.ready:
+            if self.moving_right and self.rect.right < settings.screen_width:
+                self.centerx += speed
+            if self.moving_left and self.rect.left > 0:
+                self.centerx -= speed
         if self.moving_down and self.rect.bottom < settings.screen_height:
             self.centery += speed
+            self.animdir = -1
         if self.moving_up and self.rect.top > 0:
             self.centery -= speed
+            self.animdir = 1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hitbox.center = self.rect.center
@@ -65,14 +77,17 @@ class Ship(Sprite):
     def update_analog(self, settings):
         """Animate the ship, then move it based on analog stick movement."""
         self.animate()
-        if self.an_right > 0 and self.rect.right < settings.screen_width:
-            self.centerx += self.an_right * settings.ship_speed
-        if self.an_left < 0 and self.rect.left > 0:
-            self.centerx += self.an_left * settings.ship_speed
+        if self.ready:
+            if self.an_right > 0 and self.rect.right < settings.screen_width:
+                self.centerx += self.an_right * settings.ship_speed
+            if self.an_left < 0 and self.rect.left > 0:
+                self.centerx += self.an_left * settings.ship_speed
         if self.an_up < 0 and self.rect.top > 0:
             self.centery += self.an_up * settings.ship_speed
+            self.animdir = 1
         if self.an_down > 0 and self.rect.bottom < settings.screen_height:
             self.centery += self.an_down * settings.ship_speed
+            self.animdir = -1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hitbox.center = self.rect.center
@@ -90,11 +105,19 @@ class Ship(Sprite):
             image = pygame.image.load("assets/ship/" + filename)
             self.images.append(image)
         self.index = 0
+        self.animdir = 1
 
     def animate(self):
         """Animate the ship."""
-        self.index += 1
-        if self.index >= len(self.images):
+        self.index += self.animdir
+        if self.animdir == 1 and self.index == len(self.images):
+            self.index = 0
+        if self.animdir == -1 and self.index == 0:
+            self.index = len(self.images) - 1
+        # If the index escapes < 0 or > 30, fix it before something crashes.
+        if self.index < 0:
+            self.index = len(self.images) - 1
+        if self.index > len(self.images):
             self.index = 0
         self.image = self.images[self.index]
 

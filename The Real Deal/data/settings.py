@@ -11,8 +11,8 @@ class Settings():
             [self.gamepad_connected, self.screen_width, self.screen_height,
              self.gamepad_id, self.deadzone, self.axis_x, self.axis_y,
              self.hat_id, self.but_A, self.but_B, self.show_fps] = vars
-        except (FileNotFoundError, EOFError):
-            print("ERROR: Couldn't read settings.pickle!\n",
+        except (FileNotFoundError, EOFError, ValueError):
+            print("ERROR: Couldn't load from settings.pickle!\n",
                   "Did you run the launcher?")
             quit()
         # Colors
