@@ -20,8 +20,9 @@ class Settings():
         # Performance
         self.star_limit = 100
         self.fps_limit = 60
-        # Movement
+        # Ship
         self.ship_speed = 10
+        self.ship_health = 2
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         # Bullets
@@ -31,3 +32,5 @@ class Settings():
         self.bullet_height = 3
         self.bullet_limit = 50
         self.bullet_cooldown = 5
+        # Enemies
+        self.enemy_1_speed = 5

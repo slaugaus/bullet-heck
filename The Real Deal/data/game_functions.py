@@ -1,17 +1,19 @@
 import pygame
 import sys
+import random
 from star import Star
 from bullet import Bullet
+from enemy import Enemy
 
 
-def check_events(settings, screen, ship, gamepad, bullets, stats, sounds):
+def check_events(settings, screen, ship, gamepad, bullets, stats, sounds, enemies):
     """Respond to key, gamepad, and mouse events."""
     check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, ship)
+            check_keydown_events(event, settings, ship, screen, enemies)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -36,7 +38,7 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
         stats.bullet_cooldown -= 1
 
 
-def check_keydown_events(event, settings, ship):
+def check_keydown_events(event, settings, ship, screen, enemies):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
@@ -49,6 +51,8 @@ def check_keydown_events(event, settings, ship):
         ship.moving_down = True
     elif event.key == pygame.K_UP:
         ship.moving_up = True
+    if event.key == pygame.K_1:
+        spawn_enemy(settings, screen, 1, enemies)
 
 
 def check_keyup_events(event, settings, ship):
@@ -113,6 +117,30 @@ def update_stars(settings, screen, stars):
             stars.remove(star)
 
 
+def spawn_enemy(settings, screen, id, enemies):
+    """Spawn an enemy."""
+    enemy = Enemy(settings, screen, id)
+    enemy.x = settings.screen_width
+    enemy.y = random.randint(0, settings.screen_height)
+    enemy.rect.x = enemy.x
+    enemy.rect.y = enemy.y
+    enemies.add(enemy)
+
+
+def update_enemies(settings, screen, ship, enemies, sounds, stats):
+    """Update the enemies."""
+    enemies.update()
+    for enemy in enemies.sprites():
+        if enemy.health == 0:
+            enemies.remove(enemy)
+            print("RIP enemy")
+            sounds.small_explode.play()
+        if enemy.rect.right <= 0:
+            enemies.remove(enemy)
+            print("Miss")
+    check_enemy_ship_collisions(settings, screen, enemies, ship, stats)
+
+
 def fire_bullet(settings, screen, ship, bullets, sounds):
     if len(bullets) < settings.bullet_limit:
         new_bullet = Bullet(settings, screen, ship)
@@ -120,7 +148,7 @@ def fire_bullet(settings, screen, ship, bullets, sounds):
         sounds.pew.play()
 
 
-def update_bullets(settings, screen, ship, bullets):
+def update_bullets(settings, screen, ship, bullets, enemies):
     """Update position of bullets, deleting the ones offscreen."""
     # Update bullet positions.
     bullets.update()
@@ -128,14 +156,39 @@ def update_bullets(settings, screen, ship, bullets):
     for bullet in bullets.copy():
         if bullet.rect.left >= settings.screen_width:
             bullets.remove(bullet)
+    check_bullet_collisions(settings, screen, enemies, bullets)
 
 
-def update_screen(settings, screen, stars, ship, bullets):
+def check_bullet_collisions(settings, screen, enemies, bullets):
+    """Respond to bullet-enemy collisions."""
+    for enemy in enemies.sprites():
+        collision = pygame.sprite.spritecollide(enemy, bullets, True)
+        if collision:
+            enemy.health -= 1
+
+
+def check_enemy_ship_collisions(settings, screen, enemies, ship, stats):
+    """Respond to enemy-ship collisions."""
+    for enemy in enemies.sprites():
+        if pygame.sprite.collide_rect(ship, enemy) and enemy.can_damage_ship:
+            if stats.ship_health > 0:
+                stats.ship_health -= 1
+                enemy.can_damage_ship = False
+            else:
+                print("Rip you")
+                ship.reset_pos()
+                stats.ship_health = settings.ship_health
+
+
+
+def update_screen(settings, screen, stars, ship, bullets, enemies):
     """Update and flip any images onscreen."""
     screen.fill(settings.bg_color)
     for star in stars.sprites():
         star.blitme()
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+    for enemy in enemies.sprites():
+        enemy.blitme()
     ship.blitme()
     pygame.display.flip()

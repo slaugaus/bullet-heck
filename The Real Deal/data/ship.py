@@ -33,7 +33,7 @@ class Ship(Sprite):
         self.an_up, self.an_down = 0, 0
         self.an_right, self.an_left = 0, 0
 
-    def reset_pos(self, settings):
+    def reset_pos(self):
         """Reset the ship's position."""
         self.ready = False
         self.centery = self.screen_rect.centery
@@ -110,15 +110,11 @@ class Ship(Sprite):
     def animate(self):
         """Animate the ship."""
         self.index += self.animdir
-        if self.animdir == 1 and self.index == len(self.images):
+        # <> are there in case the index ever goes past 30 or 0.
+        if self.animdir == 1 and self.index >= len(self.images):
             self.index = 0
-        if self.animdir == -1 and self.index == 0:
+        if self.animdir == -1 and self.index <= 0:
             self.index = len(self.images) - 1
-        # If the index escapes < 0 or > 30, fix it before something crashes.
-        if self.index < 0:
-            self.index = len(self.images) - 1
-        if self.index > len(self.images):
-            self.index = 0
         self.image = self.images[self.index]
 
     def blitme(self):
