@@ -134,11 +134,11 @@ def update_enemies(settings, screen, ship, enemies, sounds, stats):
         if enemy.health == 0:
             enemies.remove(enemy)
             print("RIP enemy")
-            sounds.small_explode.play()
+            sounds.boom_small.play()
         if enemy.rect.right <= 0:
             enemies.remove(enemy)
             print("Miss")
-    check_enemy_ship_collisions(settings, screen, enemies, ship, stats)
+    check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds)
 
 
 def fire_bullet(settings, screen, ship, bullets, sounds):
@@ -167,17 +167,21 @@ def check_bullet_collisions(settings, screen, enemies, bullets):
             enemy.health -= 1
 
 
-def check_enemy_ship_collisions(settings, screen, enemies, ship, stats):
+def check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds):
     """Respond to enemy-ship collisions."""
     for enemy in enemies.sprites():
-        if pygame.sprite.collide_rect(ship, enemy) and enemy.can_damage_ship:
+        if pygame.sprite.collide_circle(ship, enemy) and enemy.can_damage_ship:
             if stats.ship_health > 0:
                 stats.ship_health -= 1
+                enemy.health -= 1
                 enemy.can_damage_ship = False
+                print("Ouch")
+                sounds.boom_small.play()
             else:
                 print("Rip you")
                 ship.reset_pos()
                 stats.ship_health = settings.ship_health
+                sounds.boom_small.play()
 
 
 
@@ -188,7 +192,7 @@ def update_screen(settings, screen, stars, ship, bullets, enemies):
         star.blitme()
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+    ship.blitme()
     for enemy in enemies.sprites():
         enemy.blitme()
-    ship.blitme()
     pygame.display.flip()

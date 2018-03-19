@@ -14,12 +14,12 @@ class Ship(Sprite):
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
-        self.hb_image = pygame.image.load("assets/hitbox.png")
-        self.hitbox = self.hb_image.get_rect()
+        self.hitbox = pygame.image.load("assets/hitbox.png")
+        self.hb_rect = self.hitbox.get_rect()
         # Place the ship in the vertical middle with some padding.
         self.rect.centery = self.screen_rect.centery
         self.rect.right = self.screen_rect.left
-        self.hitbox.center = self.rect.center
+        self.hb_rect.center = self.rect.center
         self.ready = False
         # Store the ship's center as decimals.
         self.centerx = float(self.rect.centerx)
@@ -32,6 +32,8 @@ class Ship(Sprite):
         # Flags for analog movement
         self.an_up, self.an_down = 0, 0
         self.an_right, self.an_left = 0, 0
+        # Collision info
+        self.radius = 3.5
 
     def reset_pos(self):
         """Reset the ship's position."""
@@ -72,7 +74,7 @@ class Ship(Sprite):
             self.animdir = 1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
-        self.hitbox.center = self.rect.center
+        self.hb_rect.center = self.rect.center
 
     def update_analog(self, settings):
         """Animate the ship, then move it based on analog stick movement."""
@@ -90,7 +92,7 @@ class Ship(Sprite):
             self.animdir = -1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
-        self.hitbox.center = self.rect.center
+        self.hb_rect.center = self.rect.center
 
     def prep_anim(self):
         """Load each animation frame and prepare for animation."""
@@ -120,4 +122,4 @@ class Ship(Sprite):
     def blitme(self):
         """Draw the ship and its hitbox."""
         self.screen.blit(self.image, self.rect)
-        self.screen.blit(self.hb_image, self.hitbox)
+        self.screen.blit(self.hitbox, self.hb_rect)

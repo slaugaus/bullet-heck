@@ -19,6 +19,8 @@ class Enemy(Sprite):
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
         self.x = float(self.rect.x)
+        # Collision info
+        self.radius = 25
 
     def prep_anim(self):
         """Load each animation frame and prepare for animation."""
