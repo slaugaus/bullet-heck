@@ -8,13 +8,17 @@ class Settings():
         try:
             file = open("../settings.pickle", mode="r+b")
             vars = pickle.load(file)
-            [self.gamepad_connected, self.screen_width, self.screen_height,
+            [self.gamepad_connected, self.screen_res,
              self.gamepad_id, self.deadzone, self.axis_x, self.axis_y,
              self.hat_id, self.but_A, self.but_B, self.show_fps] = vars
         except (FileNotFoundError, EOFError, ValueError):
             print("ERROR: Couldn't load from settings.pickle!\n",
                   "Did you run the launcher?")
             quit()
+        # Split the screen resolution into useful values
+        reslist = self.screen_res.split()
+        self.screen_width = int(reslist[0])
+        self.screen_height = int(reslist[2])
         # Colors
         self.bg_color = (0, 0, 0)
         # Performance

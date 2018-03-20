@@ -30,8 +30,7 @@ except (FileNotFoundError, EOFError):
     settings_exist = False
 # Variables that will be written to settings
 gamepad_connected = tk.BooleanVar(sett_win)
-screen_width = tk.IntVar(sett_win)
-screen_height = tk.IntVar(sett_win)
+screen_res = tk.StringVar(sett_win)
 gamepad_id = tk.IntVar(sett_win)
 deadzone = tk.DoubleVar(sett_win)
 axis_x = tk.IntVar(sett_win)
@@ -43,7 +42,7 @@ show_fps = tk.BooleanVar(sett_win)
 music_volume = tk.IntVar(sett_win)
 sound_volume = tk.IntVar(sett_win)
 
-var_list = [gamepad_connected, screen_width, screen_height, gamepad_id,
+var_list = [gamepad_connected, screen_res, gamepad_id,
             deadzone, axis_x, axis_y, hat_id, but_A, but_B, show_fps]
 
 
@@ -51,8 +50,7 @@ def reset_settings(confirm):
     """Reset the settings to the defaults, possibly asking to confirm."""
     if not confirm:
         gamepad_connected.set(False)
-        screen_width.set(1600)
-        screen_height.set(900)
+        screen_res.set("1600 x 900")
         gamepad_id.set(0)
         deadzone.set(0.2)
         axis_x.set(0)
@@ -78,22 +76,38 @@ else:
         var.set(vars_to_load[var_list.index(var)])
 
 
+def warn_res():
+    """Throw a warning window if the resolution is too high."""
+    if int(screen_res.get().split()[0]) > main_win.winfo_screenwidth():
+        messagebox.showwarning(title="Warning!",
+                               message=("Your screen is smaller than "
+                                        "the recommended value!\n"
+                                        "Set \"Window resolution\" to "
+                                        "something lower.\nNote that this "
+                                        "will make the game harder."))
+        return False
+    else:
+        return True
+
+
 def launch(target="BulletHeck.py"):
     """Run another .py file, which should be BulletHeck.py."""
     if target == "BulletHeck.py":
-        sett_win.destroy()
-        main_win.destroy()
-        save_settings(False)
-        os.chdir("data")
-        sys.path.append(os.getcwd())
-    runpy.run_path(target)
+        if warn_res() is True:
+            sett_win.destroy()
+            main_win.destroy()
+            save_settings(False)
+            os.chdir("data")
+            sys.path.append(os.getcwd())
+            runpy.run_path(target)
+    else:
+        runpy.run_path(target)
 
 
 def save_settings(exit):
     """Write all of the variables to settings.pickle."""
     global file
-    vars_to_save = [gamepad_connected.get(), screen_width.get(),
-                    screen_height.get(), gamepad_id.get(), deadzone.get(),
+    vars_to_save = [gamepad_connected.get(), screen_res.get(), gamepad_id.get(), deadzone.get(),
                     axis_x.get(), axis_y.get(), hat_id.get(), but_A.get(),
                     but_B.get(), show_fps.get()]
     pickle.dump(vars_to_save, file)
@@ -139,10 +153,11 @@ page1.columnconfigure(0, weight=1)  # fills the frame width
 notebook.add(page1, text="General settings")
 cb1 = ttk.Checkbutton(page1, text="I have a gamepad connected",
                       var=gamepad_connected)
-en1_lb = ttk.Label(page1, text="Window resolution (width x height):")
-en1 = ttk.Entry(page1, textvar=screen_width, width=5)
-en2_lb = ttk.Label(page1, text="x")
-en2 = ttk.Entry(page1, textvar=screen_height, width=5)
+combobox1_lb = ttk.Label(page1, text="Window resolution:")
+combobox1 = ttk.Combobox(page1, textvar=screen_res, state="readonly",
+                         values=["1600 x 900", "1280 x 720", "1152 x 648"])
+# en2_lb = ttk.Label(page1, text="x")
+# en2 = ttk.Entry(page1, textvar=screen_height, width=5)
 sc1 = ttk.Scale(page1, from_=0, to=100, command=update_mus_vol, var=music_volume)
 sc1_lb = ttk.Label(page1, text="Music volume:")
 sc1_value = ttk.Label(page1, textvar=music_volume)
@@ -195,10 +210,10 @@ reset.grid(row=1, column=1, sticky="we")
 saveandexit.grid(row=1, column=2, sticky="we")
 
 cb1.grid(columnspan=4)
-en1_lb.grid(row=1)
-en1.grid(row=1, column=1)
-en2_lb.grid(row=1, column=2)
-en2.grid(row=1, column=3)
+combobox1_lb.grid(row=1)
+combobox1.grid(row=1, column=1)
+# en2_lb.grid(row=1, column=2)
+# en2.grid(row=1, column=3)
 sc1.grid(row=2)
 sc1_lb.grid(row=2, column=1, columnspan=2)
 sc1_value.grid(row=2, column=3)
@@ -228,6 +243,8 @@ cb2.grid(row=1)
 
 # Hide the settings window by default.
 sett_win.withdraw()
+# Check resolution.
+warn_res()
 # Main loops
 main_win.mainloop()
 sett_win.mainloop()
