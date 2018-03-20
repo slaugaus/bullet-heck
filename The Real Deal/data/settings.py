@@ -8,9 +8,9 @@ class Settings():
         try:
             file = open("../settings.pickle", mode="r+b")
             vars = pickle.load(file)
-            [self.gamepad_connected, self.screen_res,
-             self.gamepad_id, self.deadzone, self.axis_x, self.axis_y,
-             self.hat_id, self.but_A, self.but_B, self.show_fps] = vars
+            [self.gamepad_connected, self.screen_res, self.gamepad_id,
+             self.deadzone, self.axis_x, self.axis_y, self.hat_id, self.but_A,
+             self.but_B, self.show_fps, skip_launcher, self.autofire] = vars
         except (FileNotFoundError, EOFError, ValueError):
             print("ERROR: Couldn't load from settings.pickle!\n",
                   "Did you run the launcher?")
@@ -37,4 +37,4 @@ class Settings():
         self.bullet_limit = 50
         self.bullet_cooldown = 5
         # Enemies
-        self.enemy_1_speed = 5
+        self.enemy_1_speed = 4

@@ -10,6 +10,22 @@ from PIL import Image, ImageTk
 # Libs used by the target file (needed for compilation)
 import pygame
 import random
+# Create and/or load settings.pickle
+try:
+    file = open("settings.pickle", mode="r+b")
+    vars_to_load = pickle.load(file)
+    # If the settings say to skip the launcher, do so.
+    if vars_to_load[10]:
+        os.chdir("data")
+        sys.path.append(os.getcwd())
+        runpy.run_path("BulletHeck.py")
+    else:
+        file = open("settings.pickle", mode="w+b")
+        settings_exist = True
+except (FileNotFoundError, EOFError):
+    file = open("settings.pickle", mode="w+b")
+    file = open("settings.pickle", mode="r+b")
+    settings_exist = False
 # Define the windows.
 main_win = tk.Tk()
 main_win.title("Bullet Heck! Launcher")
@@ -18,16 +34,6 @@ sett_win = tk.Toplevel()
 sett_win.title("Settings")
 sett_win.protocol("WM_DELETE_WINDOW", sett_win.withdraw)
 sett_win.resizable(False, False)
-# Create and/or load settings.pickle
-try:
-    file = open("settings.pickle", mode="r+b")
-    vars_to_load = pickle.load(file)
-    file = open("settings.pickle", mode="w+b")
-    settings_exist = True
-except (FileNotFoundError, EOFError):
-    file = open("settings.pickle", mode="w+b")
-    file = open("settings.pickle", mode="r+b")
-    settings_exist = False
 # Variables that will be written to settings
 gamepad_connected = tk.BooleanVar(sett_win)
 screen_res = tk.StringVar(sett_win)
@@ -39,11 +45,11 @@ hat_id = tk.IntVar(sett_win)
 but_A = tk.IntVar(sett_win)
 but_B = tk.IntVar(sett_win)
 show_fps = tk.BooleanVar(sett_win)
-music_volume = tk.IntVar(sett_win)
-sound_volume = tk.IntVar(sett_win)
+skip_launcher = tk.BooleanVar(sett_win)
+autofire = tk.BooleanVar(sett_win)
 
-var_list = [gamepad_connected, screen_res, gamepad_id,
-            deadzone, axis_x, axis_y, hat_id, but_A, but_B, show_fps]
+var_list = [gamepad_connected, screen_res, gamepad_id, deadzone, axis_x,
+            axis_y, hat_id, but_A, but_B, show_fps, skip_launcher, autofire]
 
 
 def reset_settings(confirm):
@@ -59,8 +65,8 @@ def reset_settings(confirm):
         but_A.set(0)
         but_B.set(1)
         show_fps.set(False)
-        music_volume.set(100)
-        sound_volume.set(100)
+        skip_launcher.set(False)
+        autofire.set(False)
     else:
         confirm = messagebox.askokcancel(message="Are you sure?")
         if confirm:
@@ -107,9 +113,10 @@ def launch(target="BulletHeck.py"):
 def save_settings(exit):
     """Write all of the variables to settings.pickle."""
     global file
-    vars_to_save = [gamepad_connected.get(), screen_res.get(), gamepad_id.get(), deadzone.get(),
-                    axis_x.get(), axis_y.get(), hat_id.get(), but_A.get(),
-                    but_B.get(), show_fps.get()]
+    vars_to_save = [gamepad_connected.get(), screen_res.get(),
+                    gamepad_id.get(), deadzone.get(), axis_x.get(),
+                    axis_y.get(), hat_id.get(), but_A.get(), but_B.get(),
+                    show_fps.get(), skip_launcher.get(), autofire.get()]
     pickle.dump(vars_to_save, file)
     # Close and reopen the file so pickle can actually modify it.
     file.close()
@@ -123,16 +130,10 @@ def show_credits():
                         message="Sound effects obtained from www.zapsplat.com")
 
 
-def update_mus_vol(vol):
-    vol = int(float(vol))
-    print(vol)
-    music_volume.set(vol)
-
-
-def update_snd_vol(vol):
-    vol = int(float(vol))
-    print(vol)
-    sound_volume.set(vol)
+def show_skip_msg():
+    messagebox.showinfo(message=("To see the launcher again, "
+                                 "delete settings.pickle.\n"
+                                 "This will also reset your settings."))
 
 
 # Define all of the widgets.
@@ -153,17 +154,14 @@ page1.columnconfigure(0, weight=1)  # fills the frame width
 notebook.add(page1, text="General settings")
 cb1 = ttk.Checkbutton(page1, text="I have a gamepad connected",
                       var=gamepad_connected)
+cb2 = ttk.Checkbutton(page1, text="Show framerate in console", var=show_fps)
+cb3 = ttk.Checkbutton(page1, text="Don't show the launcher again",
+                      var=skip_launcher, command=show_skip_msg)
+cb4 = ttk.Checkbutton(page1, text="Fire bullets automatically", var=autofire)
 combobox1_lb = ttk.Label(page1, text="Window resolution:")
 combobox1 = ttk.Combobox(page1, textvar=screen_res, state="readonly",
-                         values=["1600 x 900", "1280 x 720", "1152 x 648"])
-# en2_lb = ttk.Label(page1, text="x")
-# en2 = ttk.Entry(page1, textvar=screen_height, width=5)
-sc1 = ttk.Scale(page1, from_=0, to=100, command=update_mus_vol, var=music_volume)
-sc1_lb = ttk.Label(page1, text="Music volume:")
-sc1_value = ttk.Label(page1, textvar=music_volume)
-sc2 = ttk.Scale(page1, from_=0, to=100, command=update_snd_vol, var=sound_volume)
-sc2_lb = ttk.Label(page1, text="Sound volume:")
-sc2_value = ttk.Label(page1, textvar=sound_volume)
+                         values=["1600 x 900", "1366 x 768",
+                                 "1280 x 720", "1152 x 648"])
 
 page2 = tk.Frame(sett_win)
 page2.columnconfigure(0, weight=1)
@@ -186,12 +184,6 @@ en9_lb = ttk.Label(page2, text="ID of B (right) Button:")
 but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 
-page3 = tk.Frame(sett_win)
-page3.columnconfigure(0, weight=1)
-notebook.add(page3, text="Logging settings")
-pg3_lb = ttk.Label(page3, text="Only change these if you need to.")
-cb2 = ttk.Checkbutton(page3, text="Show FPS in console", var=show_fps)
-
 save = ttk.Button(sett_win, text="Save settings",
                   command=lambda: save_settings(False))
 reset = ttk.Button(sett_win, text="Reset settings",
@@ -209,17 +201,12 @@ save.grid(row=1, sticky="we")
 reset.grid(row=1, column=1, sticky="we")
 saveandexit.grid(row=1, column=2, sticky="we")
 
-cb1.grid(columnspan=4)
-combobox1_lb.grid(row=1)
-combobox1.grid(row=1, column=1)
-# en2_lb.grid(row=1, column=2)
-# en2.grid(row=1, column=3)
-sc1.grid(row=2)
-sc1_lb.grid(row=2, column=1, columnspan=2)
-sc1_value.grid(row=2, column=3)
-sc2.grid(row=3)
-sc2_lb.grid(row=3, column=1, columnspan=2)
-sc2_value.grid(row=3, column=3)
+cb1.grid(columnspan=2)
+cb2.grid(row=1, columnspan=2)
+cb3.grid(row=2, columnspan=2)
+cb4.grid(row=3, columnspan=2)
+combobox1_lb.grid(row=4)
+combobox1.grid(row=4, column=1)
 
 pg2_lb.grid(columnspan=2)
 en3_lb.grid(row=1, sticky="e")
@@ -237,9 +224,6 @@ en8.grid(row=6, column=1)
 en9_lb.grid(row=7, sticky="e")
 en9.grid(row=7, column=1)
 but_gptest.grid(row=8, columnspan=2, sticky="we")
-
-pg3_lb.grid(columnspan=2)
-cb2.grid(row=1)
 
 # Hide the settings window by default.
 sett_win.withdraw()

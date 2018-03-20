@@ -6,7 +6,8 @@ from bullet import Bullet
 from enemy import Enemy
 
 
-def check_events(settings, screen, ship, gamepad, bullets, stats, sounds, enemies):
+def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
+                 enemies):
     """Respond to key, gamepad, and mouse events."""
     check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds)
     for event in pygame.event.get():
@@ -26,6 +27,9 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
     keys = pygame.key.get_pressed()
     """If spacebar or b key or A button are held, fire bullets,
        waiting 10 frames between fires."""
+    if settings.autofire and stats.bullet_cooldown == 0:
+        fire_bullet(settings, screen, ship, bullets, sounds)
+        stats.bullet_cooldown = settings.bullet_cooldown
     if (((keys[pygame.K_SPACE] or keys[pygame.K_b]))
             and stats.bullet_cooldown == 0):
         fire_bullet(settings, screen, ship, bullets, sounds)
@@ -121,7 +125,8 @@ def spawn_enemy(settings, screen, id, enemies):
     """Spawn an enemy."""
     enemy = Enemy(settings, screen, id)
     enemy.x = settings.screen_width
-    enemy.y = random.randint(0, settings.screen_height)
+    enemy.y = random.randint(0 + enemy.rect.height, (settings.screen_height -
+                                                     enemy.rect.height))
     enemy.rect.x = enemy.x
     enemy.rect.y = enemy.y
     enemies.add(enemy)
@@ -167,7 +172,8 @@ def check_bullet_collisions(settings, screen, enemies, bullets):
             enemy.health -= 1
 
 
-def check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds):
+def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
+                                sounds):
     """Respond to enemy-ship collisions."""
     for enemy in enemies.sprites():
         if pygame.sprite.collide_circle(ship, enemy) and enemy.can_damage_ship:
@@ -182,7 +188,6 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds):
                 ship.reset_pos()
                 stats.ship_health = settings.ship_health
                 sounds.boom_small.play()
-
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies):
