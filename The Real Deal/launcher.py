@@ -47,9 +47,12 @@ but_B = tk.IntVar(sett_win)
 show_fps = tk.BooleanVar(sett_win)
 skip_launcher = tk.BooleanVar(sett_win)
 autofire = tk.BooleanVar(sett_win)
+mute_music = tk.BooleanVar(sett_win)
+mute_sound = tk.BooleanVar(sett_win)
 
 var_list = [gamepad_connected, screen_res, gamepad_id, deadzone, axis_x,
-            axis_y, hat_id, but_A, but_B, show_fps, skip_launcher, autofire]
+            axis_y, hat_id, but_A, but_B, show_fps, skip_launcher, autofire,
+            mute_music, mute_sound]
 
 
 def reset_settings(confirm):
@@ -67,6 +70,8 @@ def reset_settings(confirm):
         show_fps.set(False)
         skip_launcher.set(False)
         autofire.set(False)
+        mute_music.set(False)
+        mute_sound.set(False)
     else:
         confirm = messagebox.askokcancel(message="Are you sure?")
         if confirm:
@@ -113,10 +118,9 @@ def launch(target="BulletHeck.py"):
 def save_settings(exit):
     """Write all of the variables to settings.pickle."""
     global file
-    vars_to_save = [gamepad_connected.get(), screen_res.get(),
-                    gamepad_id.get(), deadzone.get(), axis_x.get(),
-                    axis_y.get(), hat_id.get(), but_A.get(), but_B.get(),
-                    show_fps.get(), skip_launcher.get(), autofire.get()]
+    vars_to_save = []
+    for var in var_list:
+        vars_to_save.append(var.get())
     pickle.dump(vars_to_save, file)
     # Close and reopen the file so pickle can actually modify it.
     file.close()
@@ -127,13 +131,19 @@ def save_settings(exit):
 
 def show_credits():
     messagebox.showinfo(title="Credits",
-                        message="Sound effects obtained from www.zapsplat.com")
+                        message=("Sound effects obtained from www.zapsplat.com"
+                                 "\n\"Space Fighter Loop\"\nKevin MacLeod "
+                                 "(incompetech.com)\nLicensed under Creative "
+                                 "Commons: By Attribution 3.0 License\n"
+                                 "http://creativecommons.org/licenses/by/3.0/"
+                                 ))
 
 
 def show_skip_msg():
-    messagebox.showinfo(message=("To see the launcher again, "
-                                 "delete settings.pickle.\n"
-                                 "This will also reset your settings."))
+    if skip_launcher.get():
+        messagebox.showinfo(message=("To see the launcher again, "
+                                     "delete settings.pickle.\nNote that "
+                                     "this will also reset your settings."))
 
 
 # Define all of the widgets.
@@ -158,6 +168,8 @@ cb2 = ttk.Checkbutton(page1, text="Show framerate in console", var=show_fps)
 cb3 = ttk.Checkbutton(page1, text="Don't show the launcher again",
                       var=skip_launcher, command=show_skip_msg)
 cb4 = ttk.Checkbutton(page1, text="Fire bullets automatically", var=autofire)
+cb5 = ttk.Checkbutton(page1, text="Mute music", var=mute_music)
+cb6 = ttk.Checkbutton(page1, text="Mute sounds", var=mute_sound)
 combobox1_lb = ttk.Label(page1, text="Window resolution:")
 combobox1 = ttk.Combobox(page1, textvar=screen_res, state="readonly",
                          values=["1600 x 900", "1366 x 768",
@@ -205,8 +217,10 @@ cb1.grid(columnspan=2)
 cb2.grid(row=1, columnspan=2)
 cb3.grid(row=2, columnspan=2)
 cb4.grid(row=3, columnspan=2)
-combobox1_lb.grid(row=4)
-combobox1.grid(row=4, column=1)
+cb5.grid(row=4, columnspan=2)
+cb6.grid(row=5, columnspan=2)
+combobox1_lb.grid(row=9)
+combobox1.grid(row=9, column=1)
 
 pg2_lb.grid(columnspan=2)
 en3_lb.grid(row=1, sticky="e")
