@@ -1,9 +1,7 @@
 import pygame
 import sys
 import random
-from star import Star
-from bullet import Bullet
-from enemy import Enemy
+from entities import Star, Bullet, Enemy
 
 
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
@@ -55,6 +53,8 @@ def check_keydown_events(event, settings, ship, screen, enemies):
         ship.moving_down = True
     elif event.key == pygame.K_UP:
         ship.moving_up = True
+    if event.key == pygame.K_a:
+        settings.autofire = True if settings.autofire is False else False
     if event.key == pygame.K_1:
         spawn_enemy(settings, screen, 1, enemies)
 

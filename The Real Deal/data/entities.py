@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from pygame.sprite import Sprite
 
 
@@ -123,3 +124,113 @@ class Ship(Sprite):
         """Draw the ship and its hitbox."""
         self.screen.blit(self.image, self.rect)
         self.screen.blit(self.hitbox, self.hb_rect)
+
+
+class Enemy(Sprite):
+    """One enemy."""
+    def __init__(self, settings, screen, id):
+        """Figure out what enemy this is, then initialize it."""
+        super().__init__()
+        self.settings = settings
+        self.screen = screen
+        self.id = id
+        self.health = 4
+        self.can_damage_ship = True
+        self.prep_anim()
+        self.image = self.images[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.rect.width
+        self.rect.y = self.rect.height
+        self.x = float(self.rect.x)
+        # Collision info
+        self.radius = 25
+
+    def prep_anim(self):
+        """Load each animation frame and prepare for animation."""
+        # Load the images.
+        self.images = []
+        self.image_list = os.listdir("assets/enemy%s" % self.id)
+        # Only load the images in the folder, not stuff like Thumbs.db.
+        while len(self.image_list) > 30:
+            self.image_list.pop()
+        for filename in self.image_list:
+            image = pygame.image.load("assets/enemy%s/" % self.id + filename)
+            self.images.append(image)
+        self.index = 0
+
+    def animate(self):
+        self.index += 1
+        if self.index == len(self.images):
+            self.index = 0
+
+    def update(self):
+        self.animate()
+        self.image = self.images[self.index]
+        self.x -= self.settings.enemy_1_speed
+        self.rect.x = self.x
+
+    def blitme(self):
+        """Draw the enemy."""
+        self.screen.blit(self.image, self.rect)
+
+
+class Bullet(Sprite):
+    """Manages the ship's bullets."""
+    def __init__(self, settings, screen, ship):
+        """Make a bullet at the ship's position."""
+        super().__init__()
+        self.screen = screen
+        # Create a bullet rect at (0, 0) and set its real position.
+        self.rect = pygame.Rect(0, 0, settings.bullet_width,
+                                settings.bullet_height)
+        self.rect.centery = ship.rect.centery
+        self.rect.right = ship.rect.right
+        # Float the bullet's position, making it a decimal value.
+        self.x = float(self.rect.x)
+
+        self.color = settings.bullet_color
+        self.speed = settings.bullet_speed
+
+    def update(self):
+        """Move the bullet right."""
+        # Update position
+        self.x += self.speed
+        # Update the rect position.
+        self.rect.x = self.x
+
+    def draw_bullet(self):
+        """Draw the bullet."""
+        pygame.draw.rect(self.screen, self.color, self.rect)
+
+
+class Star(Sprite):
+    """Manages the starry background."""
+    def __init__(self, settings, screen):
+        """Put a star somewhere on the screen."""
+        super().__init__()
+        self.screen = screen
+        self.image = pygame.image.load(('assets/star.png'))
+        self.rect = self.image.get_rect()
+        self.rect.right = settings.screen_width
+        self.rect.bottom = random.randint(0, settings.screen_height)
+        # self.x = float(self.rect.x)
+        # self.color = (255, 255, 255)
+        self.speed_factor = settings.star_speed
+        self.x = float(self.rect.x)
+
+    def update(self):
+        """Move the star left."""
+        self.x -= self.speed_factor
+        self.speed_factor += 0.5
+        self.rect.x = self.x
+
+    def blitme(self):
+        """Draw the star."""
+        self.screen.blit(self.image, self.rect)
+
+
+class Explosion(Sprite):
+    """Boom!"""
+    def __init__(self, settings, screen):
+        """Load images and get ready to play."""
+        super().__init__()

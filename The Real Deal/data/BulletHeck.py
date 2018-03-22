@@ -3,7 +3,7 @@ from pygame.sprite import Group
 from pygame.joystick import Joystick
 from settings import Settings
 import game_functions as gf
-from ship import Ship
+from entities import Ship
 from stats import Stats
 from sounds import Sounds
 
