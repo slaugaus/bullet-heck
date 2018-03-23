@@ -1,21 +1,24 @@
 import pygame
-import os
 import random
 from pygame.sprite import Sprite
 
 
 class Ship(Sprite):
-    def __init__(self, settings, screen, stats):
+    def __init__(self, settings, screen, stats, images):
         """Initialize the ship and set its starting position."""
+        # Call the init function of pygame.sprite.Sprite
         super().__init__()
         self.screen = screen
         self.settings = settings
         # Load the animation frames and get the rect of frame 1.
-        self.prep_anim()
+        self.index = 0
+        self.animdir = 1
+        self.respawn_countdown = 0
+        self.images = images.ship
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
-        self.hitbox = pygame.image.load("assets/hitbox.png")
+        self.hitbox = images.hitbox
         self.hb_rect = self.hitbox.get_rect()
         # Place the ship in the vertical middle with some padding.
         self.rect.centery = self.screen_rect.centery
@@ -39,20 +42,19 @@ class Ship(Sprite):
     def reset_pos(self):
         """Reset the ship's position."""
         self.ready = False
+        self.respawn_countdown = 29
         self.centery = self.screen_rect.centery
         # same as setting self.rect.right to self.screen_rect.left
         self.centerx = self.screen_rect.left - (self.rect.right - self.centerx)
 
     def update_digital(self, settings):
         """Animate the ship, then move it if the flags say to."""
-        if not self.ready:
+        if not self.ready and self.respawn_countdown == 0:
             if self.centerx < settings.screen_width / 10:
                 self.centerx += settings.ship_speed
             else:
                 self.ready = True
-        # Don't call animate() twice with a gamepad connected.
-        if not settings.gamepad_connected:
-            self.animate()
+        self.animate()
         # The ship should be moving the same speed when moving diagonally.
         if (self.moving_up and self.moving_left or
                 self.moving_up and self.moving_right or
@@ -67,48 +69,34 @@ class Ship(Sprite):
                 self.centerx += speed
             if self.moving_left and self.rect.left > 0:
                 self.centerx -= speed
-        if self.moving_down and self.rect.bottom < settings.screen_height:
-            self.centery += speed
-            self.animdir = -1
-        if self.moving_up and self.rect.top > 0:
-            self.centery -= speed
-            self.animdir = 1
+            if self.moving_down and self.rect.bottom < settings.screen_height:
+                self.centery += speed
+                self.animdir = -1
+            if self.moving_up and self.rect.top > 0:
+                self.centery -= speed
+                self.animdir = 1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hb_rect.center = self.rect.center
+        if self.respawn_countdown is not 0:
+            self.respawn_countdown -= 1
 
     def update_analog(self, settings):
-        """Animate the ship, then move it based on analog stick movement."""
-        self.animate()
+        """Move the ship based on analog stick movement."""
         if self.ready:
             if self.an_right > 0 and self.rect.right < settings.screen_width:
                 self.centerx += self.an_right * settings.ship_speed
             if self.an_left < 0 and self.rect.left > 0:
                 self.centerx += self.an_left * settings.ship_speed
-        if self.an_up < 0 and self.rect.top > 0:
-            self.centery += self.an_up * settings.ship_speed
-            self.animdir = 1
-        if self.an_down > 0 and self.rect.bottom < settings.screen_height:
-            self.centery += self.an_down * settings.ship_speed
-            self.animdir = -1
+            if self.an_up < 0 and self.rect.top > 0:
+                self.centery += self.an_up * settings.ship_speed
+                self.animdir = 1
+            if self.an_down > 0 and self.rect.bottom < settings.screen_height:
+                self.centery += self.an_down * settings.ship_speed
+                self.animdir = -1
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hb_rect.center = self.rect.center
-
-    def prep_anim(self):
-        """Load each animation frame and prepare for animation."""
-        # Code "inspired by" https://stackoverflow.com/a/42013186
-        # Load the images.
-        self.images = []
-        self.image_list = os.listdir("assets/ship")
-        # Only load the images in the folder, not stuff like Thumbs.db.
-        while len(self.image_list) > 30:
-            self.image_list.pop()
-        for filename in self.image_list:
-            image = pygame.image.load("assets/ship/" + filename)
-            self.images.append(image)
-        self.index = 0
-        self.animdir = 1
 
     def animate(self):
         """Animate the ship."""
@@ -128,35 +116,21 @@ class Ship(Sprite):
 
 class Enemy(Sprite):
     """One enemy."""
-    def __init__(self, settings, screen, id):
+    def __init__(self, settings, screen, id, images):
         """Figure out what enemy this is, then initialize it."""
         super().__init__()
         self.settings = settings
         self.screen = screen
         self.id = id
-        self.health = 4
+        self.health = 3
         self.can_damage_ship = True
-        self.prep_anim()
+        self.index = 0
+        self.images = images.enemy1
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
         self.x = float(self.rect.x)
         # Collision info
         self.radius = 25
-
-    def prep_anim(self):
-        """Load each animation frame and prepare for animation."""
-        # Load the images.
-        self.images = []
-        self.image_list = os.listdir("assets/enemy%s" % self.id)
-        # Only load the images in the folder, not stuff like Thumbs.db.
-        while len(self.image_list) > 30:
-            self.image_list.pop()
-        for filename in self.image_list:
-            image = pygame.image.load("assets/enemy%s/" % self.id + filename)
-            self.images.append(image)
-        self.index = 0
 
     def animate(self):
         self.index += 1
@@ -205,11 +179,11 @@ class Bullet(Sprite):
 
 class Star(Sprite):
     """Manages the starry background."""
-    def __init__(self, settings, screen):
+    def __init__(self, settings, screen, images):
         """Put a star somewhere on the screen."""
         super().__init__()
         self.screen = screen
-        self.image = pygame.image.load(('assets/star.png'))
+        self.image = images.star
         self.rect = self.image.get_rect()
         self.rect.right = settings.screen_width
         self.rect.bottom = random.randint(0, settings.screen_height)
@@ -231,6 +205,24 @@ class Star(Sprite):
 
 class Explosion(Sprite):
     """Boom!"""
-    def __init__(self, settings, screen):
+    def __init__(self, settings, screen, images, pos):
         """Load images and get ready to play."""
         super().__init__()
+        self.settings = settings
+        self.screen = screen
+        self.index = 0
+        self.images = images.explosion
+        self.countdown = len(self.images) - 1
+        self.image = self.images[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.center = self.rect.center
+
+    def update(self):
+        self.rect.center = self.center
+        self.index += 1
+        self.countdown -= 1
+        self.image = self.images[self.index]
+
+    def blitme(self):
+        self.screen.blit(self.image, self.rect)

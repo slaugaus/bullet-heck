@@ -34,7 +34,7 @@ class Settings():
         self.bullet_color = (255, 0, 0)
         self.bullet_speed = 20
         self.bullet_width = 15
-        self.bullet_height = 3
+        self.bullet_height = 4
         self.bullet_limit = 50
         self.bullet_cooldown = 5
         # Enemies
