@@ -1,7 +1,26 @@
 import pygame
 import sys
 import random
-from entities import Star, Bullet, Enemy, Explosion
+from entities import Star, Bullet, Enemy, Explosion, Powerup
+
+
+def colorize(image, newColor):
+    """
+    Create a "colorized" copy of a surface (replaces RGB values with the given color, preserving the per-pixel alphas of
+    original).
+    :param image: Surface to create a colorized copy of
+    :param newColor: RGB color to use (original alpha values are preserved)
+    :return: New colorized Surface instance
+    """
+    # Shoutouts to Matt Miller at https://gamedev.stackexchange.com/a/98266
+    image = image.copy()
+
+    # zero out RGB values
+    image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
+    # add in new RGB values
+    image.fill(newColor[0:3] + (0,), None, pygame.BLEND_RGBA_ADD)
+
+    return image
 
 
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
@@ -138,13 +157,21 @@ def explode(settings, entity, screen, images, explosions):
     explosions.add(explosion)
 
 
+def spawn_powerup(entity, screen, images, powerups):
+    """Spawn a powerup where an enemy dies."""
+    powerup = Powerup(images, screen, entity.rect.center)
+    powerups.add(powerup)
+
+
 def update_enemies(settings, screen, ship, enemies, sounds, stats, explosions,
-                   images):
-    """Update the enemies."""
+                   images, powerups):
+    """Update the enemies, powerups, and explosions."""
     enemies.update()
     explosions.update()
     for enemy in enemies.sprites():
         if enemy.health == 0:
+            if random.randint(0, 0) == 0:
+                spawn_powerup(enemy, screen, images, powerups)
             explode(settings, enemy, screen, images, explosions)
             enemies.remove(enemy)
             print("RIP enemy")
@@ -205,16 +232,21 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
                 sounds.boom_small.play()
 
 
-def update_screen(settings, screen, stars, ship, bullets, enemies, explosions):
+def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
+                  powerups):
     """Update and flip any images onscreen."""
+    powerups.update()
     screen.fill(settings.bg_color)
+    # Stars under everything
     for star in stars.sprites():
         star.blitme()
     for bullet in bullets.sprites():
         bullet.draw_bullet()
-    ship.blitme()
     for enemy in enemies.sprites():
         enemy.blitme()
     for explosion in explosions.sprites():
         explosion.blitme()
+    for powerup in powerups.sprites():
+        powerup.blitme()
+    ship.blitme()
     pygame.display.flip()

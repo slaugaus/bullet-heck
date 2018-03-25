@@ -32,14 +32,13 @@ class Images():
         """Load each of the sprites and sprite lists."""
         self.hitbox = pygame.image.load("assets/hitbox.png")
         self.star = pygame.image.load("assets/star.png")
-        self.enemy1 = []
-        self.ship = []
-        self.explosion = []
-        self.load_anim("enemy1", self.enemy1)
-        self.load_anim("ship", self.ship)
-        self.load_anim("explosion", self.explosion)
+        self.enemy1 = self.load_anim("enemy1")
+        self.ship = self.load_anim("ship")
+        self.explosion = self.load_anim("explosion")
+        self.powerup = self.load_anim("powerup", 60)
 
-    def load_anim(self, dir, target, length=30):
+    def load_anim(self, dir, length=30):
+        target = []
         self.image_list = os.listdir("assets/%s" % dir)
         # Only load the images in the folder, not stuff like Thumbs.db.
         while len(self.image_list) > length:
@@ -47,3 +46,4 @@ class Images():
         for filename in self.image_list:
             image = pygame.image.load("assets/%s/" % dir + filename)
             target.append(image)
+        return target

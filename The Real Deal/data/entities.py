@@ -47,7 +47,7 @@ class Ship(Sprite):
         # same as setting self.rect.right to self.screen_rect.left
         self.centerx = self.screen_rect.left - (self.rect.right - self.centerx)
 
-    def update_digital(self, settings):
+    def update_digital(self, settings, images):
         """Animate the ship, then move it if the flags say to."""
         if not self.ready and self.respawn_countdown == 0:
             if self.centerx < settings.screen_width / 10:
@@ -78,6 +78,7 @@ class Ship(Sprite):
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hb_rect.center = self.rect.center
+        self.hitbox = images.hitbox
         if self.respawn_countdown is not 0:
             self.respawn_countdown -= 1
 
@@ -187,8 +188,6 @@ class Star(Sprite):
         self.rect = self.image.get_rect()
         self.rect.right = settings.screen_width
         self.rect.bottom = random.randint(0, settings.screen_height)
-        # self.x = float(self.rect.x)
-        # self.color = (255, 255, 255)
         self.speed_factor = settings.star_speed
         self.x = float(self.rect.x)
 
@@ -206,7 +205,7 @@ class Star(Sprite):
 class Explosion(Sprite):
     """Boom!"""
     def __init__(self, settings, screen, images, pos):
-        """Load images and get ready to play."""
+        """Place the explosion at the given coordinates."""
         super().__init__()
         self.settings = settings
         self.screen = screen
@@ -216,13 +215,37 @@ class Explosion(Sprite):
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.center = self.rect.center
 
     def update(self):
-        self.rect.center = self.center
         self.index += 1
         self.countdown -= 1
         self.image = self.images[self.index]
+
+    def blitme(self):
+        self.screen.blit(self.image, self.rect)
+
+
+class Powerup(Sprite):
+    """A powerup for the ship to collect."""
+    def __init__(self, images, screen, pos):
+        super().__init__()
+        self.screen = screen
+        self.index = 0
+        self.images = images.powerup
+        self.image = self.images[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.center = self.rect.center
+        self.x = float(self.rect.x)
+        self.speed = random.randint(1, 6)
+
+    def update(self):
+        self.index += 1
+        if self.index == len(self.images):
+            self.index = 0
+        self.image = self.images[self.index]
+        self.x -= self.speed
+        self.rect.x = self.x
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)

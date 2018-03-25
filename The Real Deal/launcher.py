@@ -89,13 +89,11 @@ else:
 
 def warn_res():
     """Throw a warning window if the resolution is too high."""
+    msg = ("Your screen is smaller than the recommended value!\n"
+           "Set \"Window resolution\" to something lower.\n"
+           "Note that this will make the game harder.")
     if int(screen_res.get().split()[0]) > main_win.winfo_screenwidth():
-        messagebox.showwarning(title="Warning!",
-                               message=("Your screen is smaller than "
-                                        "the recommended value!\n"
-                                        "Set \"Window resolution\" to "
-                                        "something lower.\nNote that this "
-                                        "will make the game harder."))
+        messagebox.showwarning(title="Warning!", message=(msg))
         return False
     else:
         return True
@@ -107,7 +105,7 @@ def launch(target="BulletHeck.py"):
         if warn_res() is True:
             sett_win.destroy()
             main_win.destroy()
-            save_settings(False)
+            save_settings()
             os.chdir("data")
             sys.path.append(os.getcwd())
             runpy.run_path(target)
@@ -115,7 +113,7 @@ def launch(target="BulletHeck.py"):
         runpy.run_path(target)
 
 
-def save_settings(exit):
+def save_settings(exit=False):
     """Write all of the variables to settings.pickle."""
     global file
     vars_to_save = []
@@ -129,21 +127,30 @@ def save_settings(exit):
         sett_win.withdraw()
 
 
+def close():
+    save_settings()
+    sett_win.destroy()
+    main_win.destroy()
+
+
 def show_credits():
-    messagebox.showinfo(title="Credits",
-                        message=("Sound effects obtained from www.zapsplat.com"
-                                 "\n\"Space Fighter Loop\"\nKevin MacLeod "
-                                 "(incompetech.com)\nLicensed under Creative "
-                                 "Commons: By Attribution 3.0 License\n"
-                                 "http://creativecommons.org/licenses/by/3.0/"
-                                 ))
+    msg = ("Sound effects obtained from www.zapsplat.com\n"
+           "Explosion graphics created at www.explosiongenerator.com\n"
+           "\"Space Fighter Loop\"\n"
+           "Kevin MacLeod (incompetech.com)\n"
+           "Licensed under Creative Commons: By Attribution 3.0 License\n"
+           "http://creativecommons.org/licenses/by/3.0/")
+    messagebox.showinfo(title="Credits", message=(msg))
 
 
 def show_skip_msg():
+    msg = ("To see the launcher again, delete settings.pickle.\n"
+           "Note that this will also reset your settings.")
     if skip_launcher.get():
-        messagebox.showinfo(message=("To see the launcher again, "
-                                     "delete settings.pickle.\nNote that "
-                                     "this will also reset your settings."))
+        messagebox.showinfo(message=msg)
+
+
+main_win.protocol("WM_DELETE_WINDOW", close)
 
 
 # Define all of the widgets.
@@ -197,7 +204,7 @@ but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 
 save = ttk.Button(sett_win, text="Save settings",
-                  command=lambda: save_settings(False))
+                  command=save_settings)
 reset = ttk.Button(sett_win, text="Reset settings",
                    command=lambda: reset_settings(True))
 saveandexit = ttk.Button(sett_win, text="Save and Exit",

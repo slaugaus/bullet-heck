@@ -22,6 +22,7 @@ def run_game():
     bullets = Group()
     enemies = Group()
     explosions = Group()
+    powerups = Group()
     clock = pygame.time.Clock()
     if settings.gamepad_connected:
         gamepad = Joystick(settings.gamepad_id)
@@ -36,12 +37,12 @@ def run_game():
         if stats.game_active:
             if settings.gamepad_connected:
                 ship.update_analog(settings)
-            ship.update_digital(settings)
+            ship.update_digital(settings, images)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds)
             gf.update_enemies(settings, screen, ship, enemies, sounds, stats,
-                              explosions, images)
+                              explosions, images, powerups)
             gf.update_screen(settings, screen, stars, ship, bullets, enemies,
-                             explosions)
+                             explosions, powerups)
             clock.tick(settings.fps_limit)
             if settings.show_fps:
                 print(clock.get_fps())

@@ -6,3 +6,4 @@ class Stats():
         self.game_active = True
         self.bullet_cooldown = 0
         self.ship_health = settings.ship_health
+        self.ship_level = 0

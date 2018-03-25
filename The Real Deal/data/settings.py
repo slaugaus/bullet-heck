@@ -30,11 +30,12 @@ class Settings():
         self.ship_health = 2
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
+        self.hitbox_color = (255, 0, 0)
         # Bullets
         self.bullet_color = (255, 0, 0)
         self.bullet_speed = 20
         self.bullet_width = 15
-        self.bullet_height = 4
+        self.bullet_height = 2
         self.bullet_limit = 50
         self.bullet_cooldown = 5
         # Enemies
