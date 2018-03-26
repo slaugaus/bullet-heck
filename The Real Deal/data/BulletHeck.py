@@ -39,8 +39,8 @@ def run_game():
                 ship.update_analog(settings)
             ship.update_digital(settings, images)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds)
-            gf.update_enemies(settings, screen, ship, enemies, sounds, stats,
-                              explosions, images, powerups)
+            gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
+                                  stats, explosions, images, powerups)
             gf.update_screen(settings, screen, stars, ship, bullets, enemies,
                              explosions, powerups)
             clock.tick(settings.fps_limit)

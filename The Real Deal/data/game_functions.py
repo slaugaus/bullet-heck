@@ -31,7 +31,8 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, ship, screen, enemies, images)
+            check_keydown_events(event, settings, ship, screen, enemies,
+                                 images)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -45,15 +46,15 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
     """If spacebar or b key or A button are held, fire bullets,
        waiting 10 frames between fires."""
     if settings.autofire and stats.bullet_cooldown == 0:
-        fire_bullet(settings, screen, ship, bullets, sounds)
+        fire_bullet(settings, screen, ship, bullets, sounds, stats)
         stats.bullet_cooldown = settings.bullet_cooldown
     if (((keys[pygame.K_SPACE] or keys[pygame.K_b]))
             and stats.bullet_cooldown == 0):
-        fire_bullet(settings, screen, ship, bullets, sounds)
+        fire_bullet(settings, screen, ship, bullets, sounds, stats)
         stats.bullet_cooldown = settings.bullet_cooldown
     if settings.gamepad_connected:
         if gamepad.get_button(settings.but_A) and stats.bullet_cooldown == 0:
-            fire_bullet(settings, screen, ship, bullets, sounds)
+            fire_bullet(settings, screen, ship, bullets, sounds, stats)
             stats.bullet_cooldown = settings.bullet_cooldown
     if stats.bullet_cooldown > 0:
         stats.bullet_cooldown -= 1
@@ -163,14 +164,15 @@ def spawn_powerup(entity, screen, images, powerups):
     powerups.add(powerup)
 
 
-def update_enemies(settings, screen, ship, enemies, sounds, stats, explosions,
-                   images, powerups):
+def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
+                       explosions, images, powerups):
     """Update the enemies, powerups, and explosions."""
     enemies.update()
     explosions.update()
+    powerups.update()
     for enemy in enemies.sprites():
         if enemy.health == 0:
-            if random.randint(0, 0) == 0:
+            if random.randint(1, 100) <= settings.powerup_chance:
                 spawn_powerup(enemy, screen, images, powerups)
             explode(settings, enemy, screen, images, explosions)
             enemies.remove(enemy)
@@ -184,12 +186,18 @@ def update_enemies(settings, screen, ship, enemies, sounds, stats, explosions,
             explosions.remove(explosion)
     check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds,
                                 images, explosions)
+    check_powerup_collisions(settings, screen, ship, powerups, stats)
 
 
-def fire_bullet(settings, screen, ship, bullets, sounds):
+def fire_bullet(settings, screen, ship, bullets, sounds, stats):
     if len(bullets) < settings.bullet_limit:
-        new_bullet = Bullet(settings, screen, ship)
-        bullets.add(new_bullet)
+        if stats.ship_level == 0:
+            bullet1 = Bullet(settings, screen, ship)
+        if stats.ship_level >= 1:
+            bullet1 = Bullet(settings, screen, ship, y_offset=6)
+            bullet2 = Bullet(settings, screen, ship, y_offset=-6)
+            bullets.add(bullet2)
+        bullets.add(bullet1)
         sounds.pew.play()
 
 
@@ -213,6 +221,15 @@ def check_bullet_collisions(settings, screen, enemies, bullets, sounds):
             sounds.hit.play()
 
 
+def check_powerup_collisions(settings, screen, ship, powerups, stats):
+    """Respond to ship-powerup collisions."""
+    for powerup in powerups.sprites():
+        if pygame.sprite.collide_rect(ship, powerup) and ship.ready:
+            print("Level up! Pretend this made a noise.")
+            stats.ship_level += 1
+            powerups.remove(powerup)
+
+
 def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
                                 sounds, images, explosions):
     """Respond to enemy-ship collisions."""
@@ -220,12 +237,13 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
         if pygame.sprite.collide_circle(ship, enemy) and enemy.can_damage_ship:
             enemy.health -= 1
             enemy.can_damage_ship = False
-            if stats.ship_health > 0:
+            if stats.ship_health > 1:
                 stats.ship_health -= 1
                 print("Ouch")
                 sounds.hit.play()
             else:
                 print("Rip you")
+                stats.ship_health -= 1
                 explode(settings, ship, screen, images, explosions)
                 ship.reset_pos()
                 stats.ship_health = settings.ship_health
@@ -235,7 +253,6 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
                   powerups):
     """Update and flip any images onscreen."""
-    powerups.update()
     screen.fill(settings.bg_color)
     # Stars under everything
     for star in stars.sprites():

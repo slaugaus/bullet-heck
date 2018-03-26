@@ -6,8 +6,6 @@ class GameStats():
         self.reset_stats()
         # Start in an inactive state.
         self.game_active = False
-        # Has the game been lost yet? (For changing the button text)
-        self.game_lost = False
         # Never reset the high score.
         self.high_score = 0
 

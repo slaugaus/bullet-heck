@@ -13,8 +13,9 @@ class Settings():
              self.but_B, self.show_fps, skip_launcher, self.autofire,
              self.mute_music, self.mute_sound] = vars
         except (FileNotFoundError, EOFError, ValueError):
-            print("ERROR: Couldn't load from settings.pickle!\n",
+            print("ERROR: Couldn't load from settings.pickle!\n"
                   "Did you run the launcher?")
+            input("Press any key to quit...")
             quit()
         # Split the screen resolution into useful values
         reslist = self.screen_res.split()
@@ -27,7 +28,7 @@ class Settings():
         self.fps_limit = 60
         # Ship
         self.ship_speed = 10
-        self.ship_health = 2
+        self.ship_health = 3
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         self.hitbox_color = (255, 0, 0)
@@ -40,3 +41,7 @@ class Settings():
         self.bullet_cooldown = 5
         # Enemies
         self.enemy_1_speed = 4
+        self.powerup_chance = 25  # percent
+
+    def reset_settings(self):
+        """Reset any settings that change during the game."""
