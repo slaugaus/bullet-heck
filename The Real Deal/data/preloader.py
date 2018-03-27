@@ -12,10 +12,12 @@ class Sounds():
             self.pew = pygame.mixer.Sound("assets/audio/pew.ogg")
             self.boom_small = pygame.mixer.Sound("assets/audio/boom_small.ogg")
             self.hit = pygame.mixer.Sound("assets/audio/hit.ogg")
+            self.levelup = pygame.mixer.Sound("assets/audio/levelup.ogg")
         else:
             self.pew = pygame.mixer.Sound("assets/audio/null.ogg")
             self.boom_small = pygame.mixer.Sound("assets/audio/null.ogg")
             self.hit = pygame.mixer.Sound("assets/audio/null.ogg")
+            self.levelup = pygame.mixer.Sound("assets/audio/null.ogg")
         if not settings.mute_music:
             self.bgm = pygame.mixer.Sound("assets/audio/bgm.ogg")
         else:

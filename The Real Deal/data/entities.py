@@ -228,9 +228,10 @@ class Explosion(Sprite):
         self.screen.blit(self.image, self.rect)
 
 
-class Powerup(Sprite):
-    """A powerup for the ship to collect."""
-    def __init__(self, images, screen, pos):
+class Pickup(Sprite):
+    """A pickup for the ship to collect.
+       Types: powerup, health, shield"""
+    def __init__(self, images, screen, pos, type):
         super().__init__()
         self.screen = screen
         self.index = 0

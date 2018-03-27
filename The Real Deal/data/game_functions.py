@@ -1,7 +1,7 @@
 import pygame
 import sys
 import random
-from entities import Star, Bullet, Enemy, Explosion, Powerup
+from entities import Star, Bullet, Enemy, Explosion, Pickup
 
 
 def colorize(image, newColor):
@@ -158,22 +158,22 @@ def explode(settings, entity, screen, images, explosions):
     explosions.add(explosion)
 
 
-def spawn_powerup(entity, screen, images, powerups):
-    """Spawn a powerup where an enemy dies."""
-    powerup = Powerup(images, screen, entity.rect.center)
-    powerups.add(powerup)
+def spawn_pickup(entity, screen, images, pickups, type):
+    """Spawn a pickup where an enemy dies."""
+    pickup = Pickup(images, screen, entity.rect.center, type)
+    pickups.add(pickup)
 
 
 def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
-                       explosions, images, powerups):
-    """Update the enemies, powerups, and explosions."""
+                       explosions, images, pickups):
+    """Update the enemies, pickups, and explosions."""
     enemies.update()
     explosions.update()
-    powerups.update()
+    pickups.update()
     for enemy in enemies.sprites():
         if enemy.health == 0:
             if random.randint(1, 100) <= settings.powerup_chance:
-                spawn_powerup(enemy, screen, images, powerups)
+                spawn_pickup(enemy, screen, images, pickups, "Powerup")
             explode(settings, enemy, screen, images, explosions)
             enemies.remove(enemy)
             print("RIP enemy")
@@ -186,7 +186,7 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
             explosions.remove(explosion)
     check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds,
                                 images, explosions)
-    check_powerup_collisions(settings, screen, ship, powerups, stats)
+    check_pickup_collisions(settings, screen, ship, pickups, stats, sounds)
 
 
 def fire_bullet(settings, screen, ship, bullets, sounds, stats):
@@ -221,13 +221,14 @@ def check_bullet_collisions(settings, screen, enemies, bullets, sounds):
             sounds.hit.play()
 
 
-def check_powerup_collisions(settings, screen, ship, powerups, stats):
-    """Respond to ship-powerup collisions."""
-    for powerup in powerups.sprites():
-        if pygame.sprite.collide_rect(ship, powerup) and ship.ready:
-            print("Level up! Pretend this made a noise.")
+def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds):
+    """Respond to ship-pickup collisions."""
+    for pickup in pickups.sprites():
+        if pygame.sprite.collide_rect(ship, pickup) and ship.ready:
+            sounds.levelup.play()
+            print("Level up!")
             stats.ship_level += 1
-            powerups.remove(powerup)
+            pickups.remove(pickup)
 
 
 def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
@@ -251,7 +252,7 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
-                  powerups):
+                  pickups):
     """Update and flip any images onscreen."""
     screen.fill(settings.bg_color)
     # Stars under everything
@@ -263,7 +264,7 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
         enemy.blitme()
     for explosion in explosions.sprites():
         explosion.blitme()
-    for powerup in powerups.sprites():
-        powerup.blitme()
+    for pickup in pickups.sprites():
+        pickup.blitme()
     ship.blitme()
     pygame.display.flip()
