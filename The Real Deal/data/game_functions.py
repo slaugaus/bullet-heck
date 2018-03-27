@@ -32,7 +32,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event, settings, ship, screen, enemies,
-                                 images)
+                                 images, stats)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -60,7 +60,8 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
         stats.bullet_cooldown -= 1
 
 
-def check_keydown_events(event, settings, ship, screen, enemies, images):
+def check_keydown_events(event, settings, ship, screen, enemies, images,
+                         stats):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
@@ -77,6 +78,9 @@ def check_keydown_events(event, settings, ship, screen, enemies, images):
         settings.autofire = True if settings.autofire is False else False
     if event.key == pygame.K_1:
         spawn_enemy(settings, screen, 1, enemies, images)
+    if event.key == pygame.K_l:
+        print("Level up!")
+        stats.ship_level += 1
 
 
 def check_keyup_events(event, settings, ship):
@@ -171,7 +175,7 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
     explosions.update()
     pickups.update()
     for enemy in enemies.sprites():
-        if enemy.health == 0:
+        if enemy.health <= 0:
             if random.randint(1, 100) <= settings.powerup_chance:
                 spawn_pickup(enemy, screen, images, pickups, "Powerup")
             explode(settings, enemy, screen, images, explosions)
@@ -190,12 +194,19 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
 
 
 def fire_bullet(settings, screen, ship, bullets, sounds, stats):
+    """Fire a pattern of bullets based on the ship's level."""
     if len(bullets) < settings.bullet_limit:
         if stats.ship_level == 0:
             bullet1 = Bullet(settings, screen, ship)
-        if stats.ship_level >= 1:
+        if stats.ship_level == 1:
+            bullet1 = Bullet(settings, screen, ship, damage=2, height=4)
+        if stats.ship_level == 2:
             bullet1 = Bullet(settings, screen, ship, y_offset=6)
             bullet2 = Bullet(settings, screen, ship, y_offset=-6)
+            bullets.add(bullet2)
+        if stats.ship_level == 3:
+            bullet1 = Bullet(settings, screen, ship, 6, 4, 15, 2)
+            bullet2 = Bullet(settings, screen, ship, -6, 4, 15, 2)
             bullets.add(bullet2)
         bullets.add(bullet1)
         sounds.pew.play()
@@ -214,10 +225,10 @@ def update_bullets(settings, screen, ship, bullets, enemies, sounds):
 
 def check_bullet_collisions(settings, screen, enemies, bullets, sounds):
     """Respond to bullet-enemy collisions."""
-    for enemy in enemies.sprites():
+    for enemy in enemies:
         collision = pygame.sprite.spritecollide(enemy, bullets, True)
-        if collision:
-            enemy.health -= 1
+        for bullet in collision:
+            enemy.health -= bullet.damage
             sounds.hit.play()
 
 

@@ -151,23 +151,22 @@ class Enemy(Sprite):
 
 class Bullet(Sprite):
     """Manages the ship's bullets."""
-    def __init__(self, settings, screen, ship, x_offset=0, y_offset=0):
+    def __init__(self, settings, screen, ship, y_offset=0, height=2, width=15,
+                 damage=1, speed=20):
         """Make a bullet at the ship's position."""
         super().__init__()
         self.screen = screen
-        self.x_offset = x_offset
         self.y_offset = y_offset
+        self.speed = speed
+        self.damage = damage
+        self.color = settings.bullet_color
         # Create a bullet rect at (0, 0) and set its real position.
-        self.rect = pygame.Rect(0, 0, settings.bullet_width,
-                                settings.bullet_height)
+        self.rect = pygame.Rect(0, 0, width, height)
         # If told to, offset the bullet from the usual value.
         self.rect.centery = ship.rect.centery + self.y_offset
-        self.rect.right = ship.rect.right + self.x_offset
+        self.rect.right = ship.rect.right
         # Float the bullet's position, making it a decimal value.
         self.x = float(self.rect.x)
-
-        self.color = settings.bullet_color
-        self.speed = settings.bullet_speed
 
     def update(self):
         """Move the bullet right."""

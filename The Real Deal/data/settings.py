@@ -34,14 +34,11 @@ class Settings():
         self.hitbox_color = (255, 0, 0)
         # Bullets
         self.bullet_color = (255, 0, 0)
-        self.bullet_speed = 20
-        self.bullet_width = 15
-        self.bullet_height = 2
-        self.bullet_limit = 50
+        self.bullet_limit = 100
         self.bullet_cooldown = 5
         # Enemies
         self.enemy_1_speed = 4
-        self.powerup_chance = 10  # percent
+        self.powerup_chance = 100  # percent
 
     def reset_settings(self):
         """Reset any settings that change during the game."""

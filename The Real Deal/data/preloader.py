@@ -37,7 +37,7 @@ class Images():
         self.enemy1 = self.load_anim("enemy1")
         self.ship = self.load_anim("ship")
         self.explosion = self.load_anim("explosion")
-        self.powerup = self.load_anim("powerup", 60)
+        self.powerup = self.load_anim("powerup")
 
     def load_anim(self, dir, length=30):
         target = []
