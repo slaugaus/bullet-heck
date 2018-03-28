@@ -6,8 +6,8 @@ from entities import Star, Bullet, Enemy, Explosion, Pickup
 
 def colorize(image, newColor):
     """
-    Create a "colorized" copy of a surface (replaces RGB values with the given color, preserving the per-pixel alphas of
-    original).
+    Create a "colorized" copy of a surface (replaces RGB values with the given
+    color, preserving the per-pixel alphas of original).
     :param image: Surface to create a colorized copy of
     :param newColor: RGB color to use (original alpha values are preserved)
     :return: New colorized Surface instance
@@ -162,9 +162,14 @@ def explode(settings, entity, screen, images, explosions):
     explosions.add(explosion)
 
 
-def spawn_pickup(entity, screen, images, pickups, type):
+def spawn_pickup(entity, screen, images, pickups, type, scatter=False):
     """Spawn a pickup where an enemy dies."""
-    pickup = Pickup(images, screen, entity.rect.center, type)
+    if not scatter:
+        center = entity.rect.center
+    else:
+        center = (entity.rect.center[0] + random.randint(-25, 25),
+                  entity.rect.center[1] + random.randint(-25, 25))
+    pickup = Pickup(images, screen, center, type)
     pickups.add(pickup)
 
 
@@ -177,7 +182,7 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
     for enemy in enemies.sprites():
         if enemy.health <= 0:
             if random.randint(1, 100) <= settings.powerup_chance:
-                spawn_pickup(enemy, screen, images, pickups, "Powerup")
+                spawn_pickup(enemy, screen, images, pickups, "p")
             explode(settings, enemy, screen, images, explosions)
             enemies.remove(enemy)
             print("RIP enemy")
@@ -188,8 +193,14 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
     for explosion in explosions.sprites():
         if explosion.countdown == 0:
             explosions.remove(explosion)
+    for pickup in pickups.sprites():
+        if (pickup.rect.right <= 0 or
+                pickup.rect.left >= settings.screen_width or
+                pickup.rect.bottom <= 0 or
+                pickup.rect.top >= settings.screen_height):
+            pickups.remove(pickup)
     check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds,
-                                images, explosions)
+                                images, explosions, pickups)
     check_pickup_collisions(settings, screen, ship, pickups, stats, sounds)
 
 
@@ -204,7 +215,7 @@ def fire_bullet(settings, screen, ship, bullets, sounds, stats):
             bullet1 = Bullet(settings, screen, ship, y_offset=6)
             bullet2 = Bullet(settings, screen, ship, y_offset=-6)
             bullets.add(bullet2)
-        if stats.ship_level == 3:
+        if stats.ship_level >= 3:
             bullet1 = Bullet(settings, screen, ship, 6, 4, 15, 2)
             bullet2 = Bullet(settings, screen, ship, -6, 4, 15, 2)
             bullets.add(bullet2)
@@ -243,7 +254,7 @@ def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds):
 
 
 def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
-                                sounds, images, explosions):
+                                sounds, images, explosions, pickups):
     """Respond to enemy-ship collisions."""
     for enemy in enemies.sprites():
         if pygame.sprite.collide_circle(ship, enemy) and enemy.can_damage_ship:
@@ -258,6 +269,9 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
                 stats.ship_health -= 1
                 explode(settings, ship, screen, images, explosions)
                 ship.reset_pos()
+                while stats.ship_level > 0:
+                    stats.ship_level -= 1
+                    spawn_pickup(ship, screen, images, pickups, "p", True)
                 stats.ship_health = settings.ship_health
                 sounds.boom_small.play()
 

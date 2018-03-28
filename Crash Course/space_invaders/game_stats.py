@@ -1,5 +1,6 @@
 class GameStats():
     """Tracks statistics for Space Invaders."""
+
     def __init__(self, si_settings):
         """Initialize stats."""
         self.si_settings = si_settings

@@ -4,6 +4,7 @@ import os
 
 class Sounds():
     """Handles the sound mixer."""
+
     def __init__(self, settings):
         """Initialize the mixer."""
         pygame.mixer.init(frequency=44100)
@@ -30,6 +31,7 @@ class Sounds():
 
 class Images():
     """Handles all of the sprites."""
+
     def __init__(self):
         """Load each of the sprites and sprite lists."""
         self.hitbox = pygame.image.load("assets/hitbox.png")

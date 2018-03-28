@@ -4,6 +4,7 @@ from pygame.sprite import Sprite
 
 class Bullet(Sprite):
     """Manages the ship's bullets."""
+
     def __init__(self, si_settings, screen, ship):
         """Make a bullet at the ship's position."""
         super().__init__()  # simpler python 3 syntax

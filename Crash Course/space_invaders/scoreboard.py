@@ -5,6 +5,7 @@ from ship import Ship
 
 class Scoreboard():
     """Report scoring info."""
+
     def __init__(self, si_settings, screen, stats):
         """Initialize scorekeeping attributes."""
         self.screen = screen

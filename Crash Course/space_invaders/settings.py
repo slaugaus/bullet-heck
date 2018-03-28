@@ -1,5 +1,6 @@
 class Settings():
     """Stores the settings for this Space Invaders clone."""
+
     def __init__(self):
         """Initializes the game's static settings."""
         self.screen_width = 960

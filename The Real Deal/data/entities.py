@@ -117,6 +117,7 @@ class Ship(Sprite):
 
 class Enemy(Sprite):
     """One enemy."""
+
     def __init__(self, settings, screen, id, images):
         """Figure out what enemy this is, then initialize it."""
         super().__init__()
@@ -151,6 +152,7 @@ class Enemy(Sprite):
 
 class Bullet(Sprite):
     """Manages the ship's bullets."""
+
     def __init__(self, settings, screen, ship, y_offset=0, height=2, width=15,
                  damage=1, speed=20):
         """Make a bullet at the ship's position."""
@@ -182,6 +184,7 @@ class Bullet(Sprite):
 
 class Star(Sprite):
     """Manages the starry background."""
+
     def __init__(self, settings, screen, images):
         """Put a star somewhere on the screen."""
         super().__init__()
@@ -206,6 +209,7 @@ class Star(Sprite):
 
 class Explosion(Sprite):
     """Boom!"""
+
     def __init__(self, settings, screen, images, pos):
         """Place the explosion at the given coordinates."""
         super().__init__()
@@ -229,26 +233,32 @@ class Explosion(Sprite):
 
 class Pickup(Sprite):
     """A pickup for the ship to collect.
-       Types: powerup, health, shield"""
+       Types: powerup (p), health (h), shield (s)"""
+
     def __init__(self, images, screen, pos, type):
         super().__init__()
         self.screen = screen
         self.index = 0
+        self.type = type
         self.images = images.powerup
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.center = self.rect.center
         self.x = float(self.rect.x)
-        self.speed = random.randint(1, 6)
+        self.y = float(self.rect.y)
+        self.xspeed = random.randint(-5, 1)
+        self.yspeed = random.randint(-2, 2)
 
     def update(self):
         self.index += 1
         if self.index == len(self.images):
             self.index = 0
         self.image = self.images[self.index]
-        self.x -= self.speed
+        self.x += self.xspeed
+        self.y += self.yspeed
         self.rect.x = self.x
+        self.rect.y = self.y
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)

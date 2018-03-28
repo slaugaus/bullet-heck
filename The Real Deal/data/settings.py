@@ -3,6 +3,7 @@ import pickle
 
 class Settings():
     """Loads and stores settings for Bullet Heck."""
+
     def __init__(self):
         """Load settings.pickle and convert the list to variables."""
         try:
