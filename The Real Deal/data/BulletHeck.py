@@ -14,6 +14,7 @@ def run_game():
     images = Images()
     pygame.init()
     stats = Stats(settings)
+    pygame.display.set_icon(images.icon)
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
     pygame.display.set_caption("Bullet Heck!")

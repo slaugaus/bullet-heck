@@ -30,10 +30,14 @@ except (FileNotFoundError, EOFError):
 main_win = tk.Tk()
 main_win.title("Bullet Heck! Launcher")
 main_win.resizable(False, False)
+main_win.iconbitmap("data/assets/icon/combined.ico")
 sett_win = tk.Toplevel()
 sett_win.title("Settings")
 sett_win.protocol("WM_DELETE_WINDOW", sett_win.withdraw)
 sett_win.resizable(False, False)
+sett_win.iconbitmap("data/assets/icon/combined.ico")
+# Hide the settings window by default.
+sett_win.withdraw()
 # Variables that will be written to settings
 gamepad_connected = tk.BooleanVar(sett_win)
 screen_res = tk.StringVar(sett_win)
@@ -246,8 +250,6 @@ en9_lb.grid(row=7, sticky="e")
 en9.grid(row=7, column=1)
 but_gptest.grid(row=8, columnspan=2, sticky="we")
 
-# Hide the settings window by default.
-sett_win.withdraw()
 # Check resolution.
 warn_res()
 # Main loops

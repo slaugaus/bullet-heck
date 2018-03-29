@@ -36,6 +36,7 @@ class Images():
         """Load each of the sprites and sprite lists."""
         self.hitbox = pygame.image.load("assets/hitbox.png")
         self.star = pygame.image.load("assets/star.png")
+        self.icon = pygame.image.load("assets/icon/icon_32.png")
         self.enemy1 = self.load_anim("enemy1")
         self.ship = self.load_anim("ship")
         self.explosion = self.load_anim("explosion")
