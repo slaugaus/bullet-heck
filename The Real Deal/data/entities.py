@@ -10,6 +10,7 @@ class Ship(Sprite):
         super().__init__()
         self.screen = screen
         self.settings = settings
+        self.stats = stats
         # Load the animation frames and get the rect of frame 1.
         self.index = 0
         self.animdir = 1
@@ -42,7 +43,7 @@ class Ship(Sprite):
     def reset_pos(self):
         """Reset the ship's position."""
         self.ready = False
-        self.respawn_countdown = 29
+        self.respawn_countdown = 44
         self.centery = self.screen_rect.centery
         # same as setting self.rect.right to self.screen_rect.left
         self.centerx = self.screen_rect.left - (self.rect.right - self.centerx)
@@ -54,6 +55,7 @@ class Ship(Sprite):
                 self.centerx += settings.ship_speed
             else:
                 self.ready = True
+                self.stats.ship_health = settings.ship_health
         self.animate()
         # The ship should be moving the same speed when moving diagonally.
         if (self.moving_up and self.moving_left or
@@ -161,7 +163,7 @@ class Bullet(Sprite):
         self.y_offset = y_offset
         self.speed = speed
         self.damage = damage
-        self.color = settings.bullet_color
+        self.color = settings.red
         # Create a bullet rect at (0, 0) and set its real position.
         self.rect = pygame.Rect(0, 0, width, height)
         # If told to, offset the bullet from the usual value.

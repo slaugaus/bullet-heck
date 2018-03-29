@@ -1,4 +1,5 @@
 import pickle
+import pygame
 
 
 class Settings():
@@ -23,7 +24,10 @@ class Settings():
         self.screen_width = int(reslist[0])
         self.screen_height = int(reslist[2])
         # Colors
-        self.bg_color = (0, 0, 0)
+        self.black = pygame.Color(0, 0, 0, 255)
+        self.red = pygame.Color(255, 0, 0, 255)
+        self.green = pygame.Color(0, 255, 0, 255)
+        self.blue = pygame.Color(0, 0, 255, 255)
         # Performance
         self.star_limit = 100
         self.fps_limit = 60
@@ -32,9 +36,8 @@ class Settings():
         self.ship_health = 3
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
-        self.hitbox_color = (255, 0, 0)
+        self.max_ship_level = 3
         # Bullets
-        self.bullet_color = (255, 0, 0)
         self.bullet_limit = 100
         self.bullet_cooldown = 5
         # Enemies

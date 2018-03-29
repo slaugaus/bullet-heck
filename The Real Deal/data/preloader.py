@@ -39,7 +39,7 @@ class Images():
         self.icon = pygame.image.load("assets/icon/icon_32.png")
         self.enemy1 = self.load_anim("enemy1")
         self.ship = self.load_anim("ship")
-        self.explosion = self.load_anim("explosion")
+        self.explosion = self.load_anim("explosion", 45)
         self.powerup = self.load_anim("powerup")
 
     def load_anim(self, dir, length=30):

@@ -272,14 +272,13 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
                 while stats.ship_level > 0:
                     stats.ship_level -= 1
                     spawn_pickup(ship, screen, images, pickups, "p", True)
-                stats.ship_health = settings.ship_health
                 sounds.boom_small.play()
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
-                  pickups):
+                  pickups, hud, stats):
     """Update and flip any images onscreen."""
-    screen.fill(settings.bg_color)
+    screen.fill(settings.black)
     # Stars under everything
     for star in stars.sprites():
         star.blitme()
@@ -292,4 +291,5 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
     for pickup in pickups.sprites():
         pickup.blitme()
     ship.blitme()
+    hud.update(stats)
     pygame.display.flip()

@@ -6,6 +6,7 @@ import game_functions as gf
 from entities import Ship
 from stats import Stats
 from preloader import Sounds, Images
+from hud import HUD
 
 
 def run_game():
@@ -13,11 +14,12 @@ def run_game():
     sounds = Sounds(settings)
     images = Images()
     pygame.init()
-    stats = Stats(settings)
     pygame.display.set_icon(images.icon)
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
     pygame.display.set_caption("Bullet Heck!")
+    stats = Stats(settings)
+    hud = HUD(settings, screen, stats)
     ship = Ship(settings, screen, stats, images)
     stars = Group()
     bullets = Group()
@@ -43,7 +45,7 @@ def run_game():
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
                                   stats, explosions, images, pickups)
             gf.update_screen(settings, screen, stars, ship, bullets, enemies,
-                             explosions, pickups)
+                             explosions, pickups, hud, stats)
             clock.tick(settings.fps_limit)
             if settings.show_fps:
                 print(clock.get_fps())
