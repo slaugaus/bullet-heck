@@ -26,19 +26,23 @@ def colorize(image, newColor):
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
                  enemies, images):
     """Respond to key, gamepad, and mouse events."""
-    check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds)
+    if stats.game_active:
+        check_repeat_keys(settings, screen, ship, bullets, stats, gamepad,
+                          sounds)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, ship, screen, enemies,
-                                 images, stats)
-        elif event.type == pygame.KEYUP:
-            check_keyup_events(event, settings, ship)
-        elif event.type == pygame.JOYAXISMOTION:
-            check_analog_events(gamepad, ship, settings)
-        elif event.type == pygame.JOYHATMOTION:
-            check_hat_events(gamepad, ship, settings)
+        if event.type == pygame.KEYDOWN:
+            check_debug_keys(event, settings, screen, enemies, images, stats)
+        if stats.game_active:
+            if event.type == pygame.KEYDOWN:
+                check_keydown_events(event, settings, ship)
+            elif event.type == pygame.KEYUP:
+                check_keyup_events(event, settings, ship)
+            elif event.type == pygame.JOYAXISMOTION:
+                check_analog_events(gamepad, ship, settings)
+            elif event.type == pygame.JOYHATMOTION:
+                check_hat_events(gamepad, ship, settings)
 
 
 def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
@@ -60,8 +64,7 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
         stats.bullet_cooldown -= 1
 
 
-def check_keydown_events(event, settings, ship, screen, enemies, images,
-                         stats):
+def check_keydown_events(event, settings, ship):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_ESCAPE:
@@ -76,11 +79,16 @@ def check_keydown_events(event, settings, ship, screen, enemies, images,
         ship.moving_up = True
     if event.key == pygame.K_a:
         settings.autofire = True if settings.autofire is False else False
+
+
+def check_debug_keys(event, settings, screen, enemies, images, stats):
     if event.key == pygame.K_1:
         spawn_enemy(settings, screen, 1, enemies, images)
     if event.key == pygame.K_l:
         print("Level up!")
         stats.ship_level += 1
+    if event.key == pygame.K_p:
+        stats.game_active = True if stats.game_active is False else False
 
 
 def check_keyup_events(event, settings, ship):
@@ -174,7 +182,7 @@ def spawn_pickup(entity, screen, images, pickups, type, scatter=False):
 
 
 def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
-                       explosions, images, pickups):
+                       explosions, images, pickups, hud):
     """Update the enemies, pickups, and explosions."""
     enemies.update()
     explosions.update()
@@ -200,7 +208,7 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
                 pickup.rect.top >= settings.screen_height):
             pickups.remove(pickup)
     check_enemy_ship_collisions(settings, screen, enemies, ship, stats, sounds,
-                                images, explosions, pickups)
+                                images, explosions, pickups, hud)
     check_pickup_collisions(settings, screen, ship, pickups, stats, sounds)
 
 
@@ -254,7 +262,7 @@ def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds):
 
 
 def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
-                                sounds, images, explosions, pickups):
+                                sounds, images, explosions, pickups, hud):
     """Respond to enemy-ship collisions."""
     for enemy in enemies.sprites():
         if pygame.sprite.collide_circle(ship, enemy) and enemy.can_damage_ship:
@@ -267,6 +275,8 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
             else:
                 print("Rip you")
                 stats.ship_health -= 1
+                stats.ship_lives -= 1
+                hud.prep_life_amount()
                 explode(settings, ship, screen, images, explosions)
                 ship.reset_pos()
                 while stats.ship_level > 0:
@@ -279,6 +289,7 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
                   pickups, hud, stats):
     """Update and flip any images onscreen."""
     screen.fill(settings.black)
+    hud.update(stats)
     # Stars under everything
     for star in stars.sprites():
         star.blitme()
@@ -291,5 +302,4 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
     for pickup in pickups.sprites():
         pickup.blitme()
     ship.blitme()
-    hud.update(stats)
     pygame.display.flip()

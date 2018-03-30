@@ -10,16 +10,20 @@ from hud import HUD
 
 
 def run_game():
+    # Initialize settings and preload assets
     settings = Settings()
     sounds = Sounds(settings)
     images = Images()
+    # Initialize Pygame and set up the window
     pygame.init()
     pygame.display.set_icon(images.icon)
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
     pygame.display.set_caption("Bullet Heck!")
+    # Initialize the stats and HUD
     stats = Stats(settings)
-    hud = HUD(settings, screen, stats)
+    hud = HUD(settings, screen, stats, images)
+    # Create the ship and groups for everything else
     ship = Ship(settings, screen, stats, images)
     stars = Group()
     bullets = Group()
@@ -43,12 +47,12 @@ def run_game():
             ship.update_digital(settings, images)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds)
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
-                                  stats, explosions, images, pickups)
-            gf.update_screen(settings, screen, stars, ship, bullets, enemies,
-                             explosions, pickups, hud, stats)
-            clock.tick(settings.fps_limit)
-            if settings.show_fps:
-                print(clock.get_fps())
+                                  stats, explosions, images, pickups, hud)
+        gf.update_screen(settings, screen, stars, ship, bullets, enemies,
+                         explosions, pickups, hud, stats)
+        clock.tick(settings.fps_limit)
+        if settings.show_fps:
+            print(clock.get_fps())
 
 
 run_game()

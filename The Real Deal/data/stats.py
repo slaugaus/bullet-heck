@@ -11,4 +11,5 @@ class Stats():
         """Reset the stats that will change."""
         self.bullet_cooldown = 0
         self.ship_health = self.settings.ship_health
+        self.ship_lives = self.settings.ship_lives
         self.ship_level = 0

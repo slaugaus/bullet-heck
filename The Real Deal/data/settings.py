@@ -24,6 +24,7 @@ class Settings():
         self.screen_width = int(reslist[0])
         self.screen_height = int(reslist[2])
         # Colors
+        self.white = pygame.Color(255, 255, 255, 255)
         self.black = pygame.Color(0, 0, 0, 255)
         self.red = pygame.Color(255, 0, 0, 255)
         self.green = pygame.Color(0, 255, 0, 255)
@@ -34,6 +35,7 @@ class Settings():
         # Ship
         self.ship_speed = 10
         self.ship_health = 3
+        self.ship_lives = 3
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         self.max_ship_level = 3
