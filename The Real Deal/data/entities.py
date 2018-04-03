@@ -80,7 +80,6 @@ class Ship(Sprite):
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hb_rect.center = self.rect.center
-        self.hitbox = images.hitbox
         if self.respawn_countdown is not 0:
             self.respawn_countdown -= 1
 

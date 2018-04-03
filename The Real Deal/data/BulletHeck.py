@@ -36,7 +36,7 @@ def run_game():
         gamepad.init()
     else:
         gamepad = 0
-    sounds.bgm.play(loops=-1)
+    pygame.mixer.music.play(loops=-1)
     while True:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
                         sounds, enemies, images)

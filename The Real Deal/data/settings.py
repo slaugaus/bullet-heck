@@ -44,7 +44,7 @@ class Settings():
         self.bullet_cooldown = 5
         # Enemies
         self.enemy_1_speed = 4
-        self.powerup_chance = 100  # percent
+        self.powerup_chance = 25  # percent
 
     def reset_settings(self):
         """Reset any settings that change during the game."""

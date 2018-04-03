@@ -11,7 +11,7 @@ class Sounds():
         pygame.mixer.set_num_channels(32)
         if not settings.mute_sound:
             self.pew = pygame.mixer.Sound("assets/audio/pew.ogg")
-            self.boom_small = pygame.mixer.Sound("assets/audio/boom_small.ogg")
+            self.boom_med = pygame.mixer.Sound("assets/audio/boom_med.ogg")
             self.hit = pygame.mixer.Sound("assets/audio/hit.ogg")
             self.levelup = pygame.mixer.Sound("assets/audio/levelup.ogg")
         else:
@@ -20,13 +20,14 @@ class Sounds():
             self.hit = pygame.mixer.Sound("assets/audio/null.ogg")
             self.levelup = pygame.mixer.Sound("assets/audio/null.ogg")
         if not settings.mute_music:
-            self.bgm = pygame.mixer.Sound("assets/audio/bgm.ogg")
+            pygame.mixer.music.load("assets/audio/bgm.ogg")
         else:
-            self.bgm = pygame.mixer.Sound("assets/audio/null.ogg")
-        self.bgm.set_volume(0.5)
+            pygame.mixer.music.load("assets/audio/null.ogg")
+        pygame.mixer.music.set_volume(0.4)
         self.pew.set_volume(0.25)
-        self.boom_small.set_volume(1)
-        self.hit.set_volume(0.15)
+        self.boom_med.set_volume(0.3)
+        self.hit.set_volume(0.1)
+        self.levelup.set_volume(0.75)
 
 
 class Images():

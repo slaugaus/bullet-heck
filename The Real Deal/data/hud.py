@@ -6,7 +6,7 @@ from entities import Ship
 class Statbar():
     """A stat bar for use in the HUD."""
 
-    def __init__(self, settings, screen, color, pos, stat, statmax):
+    def __init__(self, settings, screen, color, stat, statmax):
         self.screen = screen
         self.settings = settings
         self.stat = stat
@@ -14,13 +14,14 @@ class Statbar():
         self.color = color
         # Assumes that color is completely red, green, or blue.
         self.dark_color = color - pygame.Color(127, 127, 127, 0)
-        self.rect = pygame.Rect(0, 0, 500, 4)
-        self.top_rect = pygame.Rect(0, 0, 500, 4)
-        (self.rect.x, self.rect.y) = pos
+        self.rect = pygame.Rect(0, 0, 500, 6)
+        self.top_rect = pygame.Rect(0, 0, 500, 6)
         self.top_rect.center = self.rect.center
 
     def update(self, stat):
         """Change the top rect's length to match the given stat, then draw."""
+        self.top_rect.left = self.rect.left
+        self.top_rect.top = self.rect.top
         self.stat = stat
         if self.stat > self.statmax:
             self.stat = self.statmax
@@ -40,24 +41,36 @@ class HUD():
         self.images = images
         self.text_color = settings.white
         self.font = pygame.font.Font("assets/unoestado.ttf", 32)
-        self.healthbar = Statbar(settings, screen, settings.red, (5, 50),
+        self.healthbar = Statbar(settings, screen, settings.red,
                                  stats.ship_health, settings.ship_health)
-        self.powerbar = Statbar(settings, screen, settings.green, (5, 55),
+        self.powerbar = Statbar(settings, screen, settings.green,
                                 stats.ship_level, settings.max_ship_level)
+        self.prep_statbars()
+        self.prep_ship()
         self.prep_life_amount()
 
-    def prep_life_amount(self):
+    def prep_statbars(self):
+        self.healthbar.rect.x = 5
+        self.healthbar.rect.y = 5
+        self.powerbar.rect.x = 5
+        self.powerbar.rect.y = self.healthbar.rect.bottom + 2
+
+    def prep_ship(self):
         self.ship = Ship(self.settings, self.screen, self.stats, self.images)
-        (self.ship.rect.x, self.ship.rect.y) = (5, 5)
+        self.ship.rect.x = 5
+        self.ship.rect.y = self.powerbar.rect.bottom + 2
+
+    def prep_life_amount(self):
         lives_left = self.stats.ship_lives
-        lives_str = "x " + str(lives_left)
+        lives_str = "X " + str(lives_left)
         self.lives_image = self.font.render(lives_str, True, self.text_color)
         self.lives_rect = self.lives_image.get_rect()
         self.lives_rect.left = self.ship.rect.right + 5
-        self.lives_rect.y = self.ship.rect.y
+        self.lives_rect.centery = self.ship.rect.centery
 
     def update(self, stats):
         """Update and draw the bars."""
+        self.ship.animate()
         self.ship.blitme()
         self.screen.blit(self.lives_image, self.lives_rect)
         self.healthbar.update(stats.ship_health)

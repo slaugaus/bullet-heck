@@ -4,25 +4,6 @@ import random
 from entities import Star, Bullet, Enemy, Explosion, Pickup
 
 
-def colorize(image, newColor):
-    """
-    Create a "colorized" copy of a surface (replaces RGB values with the given
-    color, preserving the per-pixel alphas of original).
-    :param image: Surface to create a colorized copy of
-    :param newColor: RGB color to use (original alpha values are preserved)
-    :return: New colorized Surface instance
-    """
-    # Shoutouts to Matt Miller at https://gamedev.stackexchange.com/a/98266
-    image = image.copy()
-
-    # zero out RGB values
-    image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
-    # add in new RGB values
-    image.fill(newColor[0:3] + (0,), None, pygame.BLEND_RGBA_ADD)
-
-    return image
-
-
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
                  enemies, images):
     """Respond to key, gamepad, and mouse events."""
@@ -157,15 +138,15 @@ def spawn_enemy(settings, screen, id, enemies, images):
     """Spawn an enemy."""
     enemy = Enemy(settings, screen, id, images)
     enemy.x = settings.screen_width
-    enemy.y = random.randint(0 + enemy.rect.height, (settings.screen_height -
-                                                     enemy.rect.height))
+    enemy.y = random.randint(0, settings.screen_height - enemy.rect.height)
     enemy.rect.x = enemy.x
     enemy.rect.y = enemy.y
     enemies.add(enemy)
 
 
-def explode(settings, entity, screen, images, explosions):
+def explode(settings, entity, screen, images, explosions, sounds):
     """Spawn an explosion where an enemy (or the ship) dies."""
+    sounds.boom_med.play()
     explosion = Explosion(settings, screen, images, entity.rect.center)
     explosions.add(explosion)
 
@@ -191,10 +172,9 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
         if enemy.health <= 0:
             if random.randint(1, 100) <= settings.powerup_chance:
                 spawn_pickup(enemy, screen, images, pickups, "p")
-            explode(settings, enemy, screen, images, explosions)
+            explode(settings, enemy, screen, images, explosions, sounds)
             enemies.remove(enemy)
             print("RIP enemy")
-            sounds.boom_small.play()
         if enemy.rect.right <= 0:
             enemies.remove(enemy)
             print("Miss")
@@ -277,12 +257,11 @@ def check_enemy_ship_collisions(settings, screen, enemies, ship, stats,
                 stats.ship_health -= 1
                 stats.ship_lives -= 1
                 hud.prep_life_amount()
-                explode(settings, ship, screen, images, explosions)
+                explode(settings, ship, screen, images, explosions, sounds)
                 ship.reset_pos()
                 while stats.ship_level > 0:
                     stats.ship_level -= 1
                     spawn_pickup(ship, screen, images, pickups, "p", True)
-                sounds.boom_small.play()
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
