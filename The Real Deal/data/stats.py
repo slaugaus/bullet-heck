@@ -5,6 +5,7 @@ class Stats():
         """Initialize stats."""
         self.settings = settings
         self.game_active = True
+        self.done = False
         self.reset_stats()
 
     def reset_stats(self):
@@ -13,3 +14,5 @@ class Stats():
         self.ship_health = self.settings.ship_health
         self.ship_lives = self.settings.ship_lives
         self.ship_level = 0
+        self.ship_inv = False
+        self.ship_inv_timer = 1

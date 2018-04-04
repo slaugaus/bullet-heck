@@ -33,15 +33,16 @@ class Settings():
         self.star_limit = 100
         self.fps_limit = 60
         # Ship
-        self.ship_speed = 10
+        self.ship_speed = 10  # pixels/frame
         self.ship_health = 3
         self.ship_lives = 3
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         self.max_ship_level = 3
+        self.ship_inv_duration = 30  # frames
         # Bullets
         self.bullet_limit = 100
-        self.bullet_cooldown = 5
+        self.bullet_cooldown = 5  # frames
         # Enemies
         self.enemy_1_speed = 4
         self.powerup_chance = 25  # percent

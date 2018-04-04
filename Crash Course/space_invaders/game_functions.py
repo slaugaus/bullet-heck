@@ -192,7 +192,7 @@ def ship_hit(si_settings, screen, stats, sb, ship, aliens, bullets):
 
 
 def check_aliens_bottom(si_settings, screen, stats, sb, ship, aliens, bullets):
-    """Check if aliens have reached te bottom of the screen."""
+    """Check if aliens have reached the bottom of the screen."""
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:

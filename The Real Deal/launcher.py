@@ -91,13 +91,12 @@ else:
         var.set(vars_to_load[var_list.index(var)])
 
 
-def warn_res():
+def check_res():
     """Throw a warning window if the resolution is too high."""
-    msg = ("Your screen is smaller than the recommended value!\n"
-           "Set \"Window resolution\" to something lower.\n"
-           "Note that this will make the game harder.")
+    msg = ("Your screen is smaller than the set value!\n"
+           "Decrease \"Window resolution\" in the settings.")
     if int(screen_res.get().split()[0]) > main_win.winfo_screenwidth():
-        messagebox.showwarning(title="Warning!", message=(msg))
+        messagebox.showwarning(title="Warning!", message=msg)
         return False
     else:
         return True
@@ -106,7 +105,7 @@ def warn_res():
 def launch(target="BulletHeck.py"):
     """Run another .py file, which should be BulletHeck.py."""
     if target == "BulletHeck.py":
-        if warn_res() is True:
+        if check_res() is True:
             sett_win.destroy()
             main_win.destroy()
             save_settings()
@@ -149,9 +148,9 @@ def show_credits():
 
 def show_skip_msg():
     msg = ("To see the launcher again, delete settings.pickle.\n"
-           "Note that this will also reset your settings.")
+           "This will also reset your settings.")
     if skip_launcher.get():
-        messagebox.showinfo(message=msg)
+        messagebox.showinfo(title="Hey!", message=msg)
 
 
 main_win.protocol("WM_DELETE_WINDOW", close)
@@ -173,8 +172,6 @@ notebook = ttk.Notebook(sett_win)
 page1 = tk.Frame(sett_win)
 page1.columnconfigure(0, weight=1)  # fills the frame width
 notebook.add(page1, text="General settings")
-cb1 = ttk.Checkbutton(page1, text="I have a gamepad connected",
-                      var=gamepad_connected)
 cb2 = ttk.Checkbutton(page1, text="Show framerate in console", var=show_fps)
 cb3 = ttk.Checkbutton(page1, text="Don't show the launcher again",
                       var=skip_launcher, command=show_skip_msg)
@@ -224,7 +221,6 @@ save.grid(row=1, sticky="we")
 reset.grid(row=1, column=1, sticky="we")
 saveandexit.grid(row=1, column=2, sticky="we")
 
-cb1.grid(columnspan=2)
 cb2.grid(row=1, columnspan=2)
 cb3.grid(row=2, columnspan=2)
 cb4.grid(row=3, columnspan=2)
@@ -251,7 +247,7 @@ en9.grid(row=7, column=1)
 but_gptest.grid(row=8, columnspan=2, sticky="we")
 
 # Check resolution.
-warn_res()
+check_res()
 # Main loops
 main_win.mainloop()
 sett_win.mainloop()

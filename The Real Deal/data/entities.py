@@ -43,20 +43,40 @@ class Ship(Sprite):
     def reset_pos(self):
         """Reset the ship's position."""
         self.ready = False
-        self.respawn_countdown = 44
+        self.respawn_countdown = 59
+        self.stats.ship_inv = True
+        self.stats.ship_inv_timer = -1
         self.centery = self.screen_rect.centery
         # same as setting self.rect.right to self.screen_rect.left
+        # (not the above because update() doesn't expect it)
         self.centerx = self.screen_rect.left - (self.rect.right - self.centerx)
 
-    def update_digital(self, settings, images):
-        """Animate the ship, then move it if the flags say to."""
+    def update(self, settings, images):
+        """Update the ship's position and various timers."""
         if not self.ready and self.respawn_countdown == 0:
             if self.centerx < settings.screen_width / 10:
                 self.centerx += settings.ship_speed
             else:
                 self.ready = True
                 self.stats.ship_health = settings.ship_health
+                self.stats.ship_inv_timer = 0
         self.animate()
+        if settings.gamepad_connected:
+            self.move_analog(settings)
+        self.move_digital(settings, images)
+        self.rect.centerx = self.centerx
+        self.rect.centery = self.centery
+        self.hb_rect.center = self.rect.center
+        if self.respawn_countdown is not 0:
+            self.respawn_countdown -= 1
+        if self.stats.ship_inv_timer > 0:
+            self.stats.ship_inv = True
+            self.stats.ship_inv_timer -= 1
+        elif self.stats.ship_inv_timer == 0:
+            self.stats.ship_inv = False
+
+    def move_digital(self, settings, images):
+        """Move the ship if the flags say to."""
         # The ship should be moving the same speed when moving diagonally.
         if (self.moving_up and self.moving_left or
                 self.moving_up and self.moving_right or
@@ -65,7 +85,7 @@ class Ship(Sprite):
             speed = settings.ship_speed * settings.diag_factor
         else:
             speed = settings.ship_speed
-        # If it's been animated in, allow horizontal movement.
+        # If it's been animated in, allow movement.
         if self.ready:
             if self.moving_right and self.rect.right < settings.screen_width:
                 self.centerx += speed
@@ -77,28 +97,31 @@ class Ship(Sprite):
             if self.moving_up and self.rect.top > 0:
                 self.centery -= speed
                 self.animdir = 1
-        self.rect.centerx = self.centerx
-        self.rect.centery = self.centery
-        self.hb_rect.center = self.rect.center
-        if self.respawn_countdown is not 0:
-            self.respawn_countdown -= 1
 
-    def update_analog(self, settings):
+    def move_analog(self, settings):
         """Move the ship based on analog stick movement."""
         if self.ready:
             if self.an_right > 0 and self.rect.right < settings.screen_width:
                 self.centerx += self.an_right * settings.ship_speed
+                self.cancel_digital()
             if self.an_left < 0 and self.rect.left > 0:
                 self.centerx += self.an_left * settings.ship_speed
+                self.cancel_digital()
             if self.an_up < 0 and self.rect.top > 0:
                 self.centery += self.an_up * settings.ship_speed
                 self.animdir = 1
+                self.cancel_digital()
             if self.an_down > 0 and self.rect.bottom < settings.screen_height:
                 self.centery += self.an_down * settings.ship_speed
                 self.animdir = -1
-        self.rect.centerx = self.centerx
-        self.rect.centery = self.centery
-        self.hb_rect.center = self.rect.center
+                self.cancel_digital()
+
+    def cancel_digital(self):
+        """Prevent "boosting" with multiple input methods."""
+        self.moving_right = False
+        self.moving_left = False
+        self.moving_down = False
+        self.moving_up = False
 
     def animate(self):
         """Animate the ship."""
