@@ -6,28 +6,39 @@ from entities import Ship
 class Statbar():
     """A stat bar for use in the HUD."""
 
-    def __init__(self, settings, screen, color, stat, statmax):
+    def __init__(self, settings, screen, color, stat, statmax, parent=None):
         self.screen = screen
         self.settings = settings
         self.stat = stat
         self.statmax = statmax
         self.color = color
-        # Assumes that color is completely red, green, or blue.
-        self.dark_color = color - pygame.Color(127, 127, 127, 0)
-        self.rect = pygame.Rect(0, 0, 500, 6)
-        self.top_rect = pygame.Rect(0, 0, 500, 6)
+        self.parent = parent
+        if self.parent is None:
+            # Assumes that color is completely red, green, or blue.
+            self.dark_color = self.color - pygame.Color(127, 127, 127, 0)
+            self.rect = pygame.Rect(0, 0, 500, 6)
+            self.top_rect = pygame.Rect(0, 0, 500, 6)
+        else:
+            # Be a border for the specified parent.
+            self.color -= pygame.Color(0, 0, 0, 255)
+            self.rect = pygame.Rect(0, 0, 504, 10)
+            self.top_rect = pygame.Rect(0, 0, 504, 10)
+            self.rect.center = self.parent.rect.center
         self.top_rect.center = self.rect.center
 
     def update(self, stat):
-        """Change the top rect's length to match the given stat, then draw."""
+        """Change the top rect's width to match the given stat, then draw."""
         self.top_rect.left = self.rect.left
         self.top_rect.top = self.rect.top
         self.stat = stat
         if self.stat > self.statmax:
             self.stat = self.statmax
-        self.top_rect.width = (self.stat / self.statmax) * 500
-        pygame.draw.rect(self.screen, self.dark_color, self.rect)
-        if self.stat > 0:
+        if self.stat == -1:
+            self.stat = self.statmax
+        self.top_rect.width = (self.stat / self.statmax) * self.rect.width
+        if self.parent is None:
+            pygame.draw.rect(self.screen, self.dark_color, self.rect)
+        if self.stat > 0 or self.stat == -1:
             pygame.draw.rect(self.screen, self.color, self.top_rect)
 
 
@@ -43,6 +54,9 @@ class HUD():
         self.font = pygame.font.Font("assets/unoestado.ttf", 32)
         self.healthbar = Statbar(settings, screen, settings.red,
                                  stats.ship_health, settings.ship_health)
+        self.invbar = Statbar(settings, screen, settings.blue,
+                              stats.ship_inv_timer, settings.ship_mercy_inv,
+                              self.healthbar)
         self.powerbar = Statbar(settings, screen, settings.green,
                                 stats.ship_level, settings.max_ship_level)
         self.prep_statbars()
@@ -52,6 +66,7 @@ class HUD():
     def prep_statbars(self):
         self.healthbar.rect.x = 5
         self.healthbar.rect.y = 5
+        self.invbar.rect.center = self.healthbar.rect.center
         self.powerbar.rect.x = 5
         self.powerbar.rect.y = self.healthbar.rect.bottom + 2
 
@@ -73,5 +88,6 @@ class HUD():
         self.ship.animate()
         self.ship.blitme()
         self.screen.blit(self.lives_image, self.lives_rect)
+        self.invbar.update(stats.ship_inv_timer)
         self.healthbar.update(stats.ship_health)
         self.powerbar.update(stats.ship_level)

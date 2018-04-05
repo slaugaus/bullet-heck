@@ -3,7 +3,7 @@ import pygame
 
 
 class Settings():
-    """Loads and stores settings for Bullet Heck."""
+    """Loads and stores settings for Bullet Heck. Also a bunch of constants."""
 
     def __init__(self):
         """Load settings.pickle and convert the list to variables."""
@@ -39,7 +39,7 @@ class Settings():
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
         self.max_ship_level = 3
-        self.ship_inv_duration = 30  # frames
+        self.ship_mercy_inv = 60  # frames
         # Bullets
         self.bullet_limit = 100
         self.bullet_cooldown = 5  # frames

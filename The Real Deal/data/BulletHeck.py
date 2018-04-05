@@ -4,13 +4,14 @@ from pygame.sprite import Group
 from pygame.joystick import Joystick
 from settings import Settings
 import game_functions as gf
-from entities import Ship
+from entities import Ship, EnemyBullet
 from stats import Stats
 from preloader import Sounds, Images
 from hud import HUD
 
 
 def run_game():
+    angle = 0
     # Initialize Pygame
     pygame.mixer.pre_init(frequency=44100)
     pygame.init()
@@ -32,6 +33,7 @@ def run_game():
     stars = Group()
     bullets = Group()
     enemies = Group()
+    enemy_bullets = Group()
     explosions = Group()
     pickups = Group()
     # Try to create a joystick object
@@ -47,19 +49,22 @@ def run_game():
     # Main loop.
     while stats.done is False:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
-                        sounds, enemies, images)
+                        sounds, enemies, images, enemy_bullets)
         gf.update_stars(settings, screen, stars, images)
         if stats.game_active:
             ship.update(settings, images)
-            gf.update_bullets(settings, screen, ship, bullets, enemies, sounds)
+            gf.update_bullets(settings, screen, ship, bullets, enemies, sounds,
+                              enemy_bullets)
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
                                   stats, explosions, images, pickups, hud)
         gf.update_screen(settings, screen, stars, ship, bullets, enemies,
-                         explosions, pickups, hud, stats)
+                         explosions, pickups, hud, stats, enemy_bullets)
         clock.tick(settings.fps_limit)
         if settings.show_fps:
             print(clock.get_fps())
-        print(stats.ship_inv, stats.ship_inv_timer)
+        angle += 15
+        enemy_bullets.add(EnemyBullet(settings, screen, (800, 450), 10, angle))
+        # print(len(enemy_bullets))
 
 
 run_game()

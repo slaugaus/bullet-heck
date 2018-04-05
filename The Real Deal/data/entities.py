@@ -59,7 +59,7 @@ class Ship(Sprite):
             else:
                 self.ready = True
                 self.stats.ship_health = settings.ship_health
-                self.stats.ship_inv_timer = 0
+                self.stats.ship_inv_timer = settings.ship_mercy_inv
         self.animate()
         if settings.gamepad_connected:
             self.move_analog(settings)
@@ -74,6 +74,10 @@ class Ship(Sprite):
             self.stats.ship_inv_timer -= 1
         elif self.stats.ship_inv_timer == 0:
             self.stats.ship_inv = False
+        if self.stats.ship_inv:
+            self.hitbox = images.hitbox_inv
+        else:
+            self.hitbox = images.hitbox
 
     def move_digital(self, settings, images):
         """Move the ship if the flags say to."""
@@ -142,8 +146,12 @@ class Ship(Sprite):
 class Enemy(Sprite):
     """One enemy."""
 
-    def __init__(self, settings, screen, id, images):
-        """Figure out what enemy this is, then initialize it."""
+    def __init__(self, settings, screen, images, id):
+        """Figure out what enemy this is, then initialize it.
+           IDs: 1 - Small tri-torus
+                2 - Big tri-torus
+                3 - Evil ship
+                4 - Spinning theta"""
         super().__init__()
         self.settings = settings
         self.screen = screen
@@ -156,7 +164,7 @@ class Enemy(Sprite):
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
         # Collision info
-        self.radius = 25
+        self.radius = 20
 
     def animate(self):
         self.index += 1
@@ -172,6 +180,37 @@ class Enemy(Sprite):
     def blitme(self):
         """Draw the enemy."""
         self.screen.blit(self.image, self.rect)
+
+
+class EnemyBullet(Sprite):
+    """Manages enemy bullets."""
+
+    def __init__(self, settings, screen, start, speed=8, angle=0, offset=0):
+        """Create an enemy bullet at the specified location (start)."""
+        super().__init__()
+        self.screen = screen
+        self.start = start
+        self.speed = speed
+        self.angle = angle
+        self.offset = offset
+        self.color_int = settings.white
+        self.color_ext = settings.red
+        self.vector = pygame.math.Vector2(0, 0)
+        self.vector.from_polar((self.speed, self.angle))
+        [self.xspeed, self.yspeed] = self.vector
+        # print([self.xspeed, self.yspeed])
+        self.rect = pygame.Rect(0, 0, 10, 10)
+        self.rect.center = self.start
+        self.radius = 5
+
+    def update(self):
+        self.rect.centerx += self.xspeed
+        self.rect.centery -= self.yspeed  # since pygame y is flipped
+
+    def draw(self):
+        pygame.gfxdraw.filled_circle(self.screen, self.rect.centerx,
+                                     self.rect.centery, self.radius,
+                                     self.color_ext)
 
 
 class Bullet(Sprite):

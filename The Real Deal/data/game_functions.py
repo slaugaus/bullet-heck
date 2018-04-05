@@ -1,10 +1,12 @@
 import pygame
+import pygame.gfxdraw
 import random
-from entities import Star, Bullet, Enemy, Explosion, Pickup
+from entities import Star, Bullet, Enemy, EnemyBullet, Explosion, Pickup
+angle = 0
 
 
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
-                 enemies, images):
+                 enemies, images, enemy_bullets):
     """Respond to key, gamepad, and mouse events."""
     if stats.game_active:
         check_repeat_keys(settings, screen, ship, bullets, stats, gamepad,
@@ -14,7 +16,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
             stats.done = True
         if event.type == pygame.KEYDOWN:
             check_debug_keys(event, settings, screen, enemies, images, stats,
-                             ship)
+                             ship, enemy_bullets)
         if stats.game_active:
             if event.type == pygame.KEYDOWN:
                 check_keydown_events(event, settings, ship)
@@ -60,11 +62,13 @@ def check_keydown_events(event, settings, ship):
         settings.autofire = True if settings.autofire is False else False
 
 
-def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
+def check_debug_keys(event, settings, screen, enemies, images, stats, ship,
+                     enemy_bullets):
+    global angle
     if event.key == pygame.K_ESCAPE:
         stats.done = True
     if event.key == pygame.K_1:
-        spawn_enemy(settings, screen, 1, enemies, images)
+        spawn_enemy(settings, screen, enemies, images, 1)
     if event.key == pygame.K_l:
         print("Level up!")
         stats.ship_level += 1
@@ -72,6 +76,9 @@ def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
         stats.game_active = True if stats.game_active is False else False
     if event.key == pygame.K_r:
         ship.reset_pos()
+    if event.key == pygame.K_b:
+        angle += 15
+        enemy_bullets.add(EnemyBullet(settings, screen, (800, 450), 10, angle))
 
 
 def check_keyup_events(event, settings, ship):
@@ -136,9 +143,9 @@ def update_stars(settings, screen, stars, images):
             stars.remove(star)
 
 
-def spawn_enemy(settings, screen, id, enemies, images):
+def spawn_enemy(settings, screen, enemies, images, id):
     """Spawn an enemy."""
-    enemy = Enemy(settings, screen, id, images)
+    enemy = Enemy(settings, screen, images, id)
     enemy.x = settings.screen_width
     enemy.y = random.randint(0, settings.screen_height - enemy.rect.height)
     enemy.rect.x = enemy.x
@@ -167,8 +174,8 @@ def spawn_pickup(entity, screen, images, pickups, type=None, scatter=False):
 
 
 def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
-                       explosions, images, pickups, hud):
-    """Update the enemies, pickups, and explosions."""
+                       explosions, images, pickups, hud,):
+    """Update the enemies, their bullets, pickups, and explosions."""
     enemies.update()
     explosions.update()
     pickups.update()
@@ -217,14 +224,22 @@ def fire_bullet(settings, screen, ship, bullets, sounds, stats):
         sounds.pew.play()
 
 
-def update_bullets(settings, screen, ship, bullets, enemies, sounds):
+def update_bullets(settings, screen, ship, bullets, enemies, sounds,
+                   enemy_bullets):
     """Update the position of bullets, deleting the ones offscreen."""
     # Update bullet positions.
     bullets.update()
+    enemy_bullets.update()
     # Delete offscreen bullets.
     for bullet in bullets.copy():
         if bullet.rect.left >= settings.screen_width:
             bullets.remove(bullet)
+    for bullet in enemy_bullets.copy():
+        if (bullet.rect.left >= settings.screen_width or
+                bullet.rect.right <= 0 or
+                bullet.rect.top >= settings.screen_height or
+                bullet.rect.bottom <= 0):
+            enemy_bullets.remove(bullet)
     check_bullet_collisions(settings, screen, enemies, bullets, sounds)
 
 
@@ -255,7 +270,7 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         if stats.ship_level > 0:
             sounds.leveldown.play()
             stats.ship_level -= 1
-        stats.ship_inv_timer = settings.ship_inv_duration
+        stats.ship_inv_timer = settings.ship_mercy_inv
         sounds.ship_hit.play()
     else:
         stats.ship_health -= 1
@@ -269,7 +284,7 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
-                  pickups, hud, stats):
+                  pickups, hud, stats, enemy_bullets):
     """Update and flip any images onscreen."""
     screen.fill(settings.black)
     for star in stars.sprites():
@@ -277,6 +292,8 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
     hud.update(stats)
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+    for bullet in enemy_bullets.sprites():
+        bullet.draw()
     for enemy in enemies.sprites():
         enemy.blitme()
     for explosion in explosions.sprites():
