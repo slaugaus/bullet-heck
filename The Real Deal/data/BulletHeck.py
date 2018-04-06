@@ -4,14 +4,13 @@ from pygame.sprite import Group
 from pygame.joystick import Joystick
 from settings import Settings
 import game_functions as gf
-from entities import Ship, EnemyBullet
+from entities import Ship
 from stats import Stats
 from preloader import Sounds, Images
 from hud import HUD
 
 
 def run_game():
-    angle = 0
     # Initialize Pygame
     pygame.mixer.pre_init(frequency=44100)
     pygame.init()
@@ -42,7 +41,7 @@ def run_game():
         gamepad.init()
         settings.gamepad_connected = True
     except pygame.error:
-        gamepad = 0
+        gamepad = None
         settings.gamepad_connected = False
     if not settings.mute_music:
         pygame.mixer.music.play(loops=-1)
@@ -62,9 +61,6 @@ def run_game():
         clock.tick(settings.fps_limit)
         if settings.show_fps:
             print(clock.get_fps())
-        angle += 15
-        enemy_bullets.add(EnemyBullet(settings, screen, (800, 450), 10, angle))
-        # print(len(enemy_bullets))
 
 
 run_game()

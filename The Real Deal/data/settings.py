@@ -1,5 +1,6 @@
 import pickle
 import pygame
+import sys
 
 
 class Settings():
@@ -18,7 +19,7 @@ class Settings():
             print("ERROR: Couldn't load from settings.pickle!\n"
                   "Did you run the launcher?")
             input("Press any key to quit...")
-            quit()
+            sys.exit()
         # Split the screen resolution into useful values
         reslist = self.screen_res.split()
         self.screen_width = int(reslist[0])
@@ -38,7 +39,7 @@ class Settings():
         self.ship_lives = 3
         self.diag_factor = ((2 ** 0.5) / 2)  # (root2)/2
         self.star_speed = 5
-        self.max_ship_level = 3
+        self.max_ship_level = 4
         self.ship_mercy_inv = 60  # frames
         # Bullets
         self.bullet_limit = 100
