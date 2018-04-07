@@ -47,13 +47,13 @@ class Images():
         self.enemy_bullet = pygame.image.load("assets/enemy_bullet.png")
         # Loading icon_16 screws it up for some reason.
         self.icon = pygame.image.load("assets/icon/icon_16_2x.png")
-        self.enemy = [0, 0, 0, 0, 0, 0, 0]
-        self.enemy[1] = self.load_anim("enemies/1")
-        self.enemy[2] = self.load_anim("enemies/2", 60)
-        self.enemy[3] = self.load_anim("enemies/3")
-        self.enemy[4] = self.load_anim("enemies/4", 60)
-        self.enemy[5] = self.load_anim("enemies/5")
-        self.enemy[6] = self.load_anim("enemies/6", 20)
+        self.enemy = [0, 0, 0, 0, 0, 0]
+        self.enemy[0] = self.load_anim("enemies/1")
+        self.enemy[1] = self.load_anim("enemies/2", 60)
+        self.enemy[2] = self.load_anim("enemies/3")
+        self.enemy[3] = self.load_anim("enemies/4", 60)
+        self.enemy[4] = self.load_anim("enemies/5")
+        self.enemy[5] = self.load_anim("enemies/6", 20)
         self.ship = self.load_anim("ship")
         self.explosion = self.load_anim("explosion", 45)
         self.explosion_large = self.load_anim("explosion_large", 45)

@@ -217,8 +217,12 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
     pickups.update()
     for enemy in enemies.sprites():
         if enemy.health <= 0:
-            if random.randint(1, 100) <= settings.powerup_chance:
+            if random.randint(1, 100) <= settings.pickup_chance:
                 spawn_pickup(enemy, settings, stats, screen, images, pickups)
+                if enemy.id == 2:
+                    # Enemy 2 drops an extra pickup.
+                    spawn_pickup(enemy, settings, stats, screen, images,
+                                 pickups)
             if enemy.id is not 2:
                 explode(settings, enemy, screen, images, explosions, sounds)
             else:
@@ -227,7 +231,6 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
             enemies.remove(enemy)
         if enemy.rect.right <= 0:
             enemies.remove(enemy)
-            print("Miss! You would lose score if it existed.")
         if pygame.sprite.collide_circle(ship, enemy) and not stats.ship_inv:
             enemy.health -= 1
             damage_ship(settings, stats, sounds, ship, hud, screen, images,
@@ -269,9 +272,51 @@ def fire_bullet(settings, screen, ship, bullets, sounds, stats):
         sounds.pew.play()
 
 
+def fire_enemy_bullets(settings, screen, images, enemies, enemy_bullets,
+                       sounds):
+    """Fire bullets from each of the enemies that can."""
+    for enemy in enemies:
+        if enemy.fire_cooldown == 0:
+            sounds.pew.play()
+            if enemy.id == 3:
+                angle = random.choice([190, 185, 175, 170])
+                bullet = EnemyBullet(settings, screen, images,
+                                     enemy.rect.center, angle, 25)
+                enemy_bullets.add(bullet)
+            if enemy.id >= 4:
+                angle = enemy.index * 3
+                bullet1 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle, 25)
+                bullet2 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle+180, 25)
+                enemy_bullets.add(bullet1, bullet2)
+            if enemy.id == 5:
+                bullet3 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle+90, 25)
+                bullet4 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle-90, 25)
+                enemy_bullets.add(bullet3, bullet4)
+            if enemy.id == 6:
+                bullet3 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle+60, 25)
+                bullet4 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle+120, 25)
+                bullet5 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle-60, 25)
+                bullet6 = EnemyBullet(settings, screen, images,
+                                      enemy.rect.center, angle-120, 25)
+                enemy_bullets.add(bullet3, bullet4, bullet5, bullet6)
+            enemy.fire_cooldown = (settings.enemy_fire_cooldown[enemy.id-1] +
+                                   random.randint(-10, 10))
+        elif enemy.fire_cooldown > 0:
+            enemy.fire_cooldown -= 1
+
+
 def update_bullets(settings, screen, ship, bullets, enemies, sounds,
-                   enemy_bullets):
-    """Update the position of bullets, deleting the ones offscreen."""
+                   enemy_bullets, images, stats, hud, explosions, pickups):
+    """Update everything related to bullets."""
+    fire_enemy_bullets(settings, screen, images, enemies, enemy_bullets,
+                       sounds)
     # Update bullet positions.
     bullets.update()
     enemy_bullets.update()
@@ -285,10 +330,14 @@ def update_bullets(settings, screen, ship, bullets, enemies, sounds,
                 bullet.rect.top >= settings.screen_height or
                 bullet.rect.bottom <= 0):
             enemy_bullets.remove(bullet)
-    check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship)
+    check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
+                            enemy_bullets, stats, hud, images, explosions,
+                            pickups)
 
 
-def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship):
+def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
+                            enemy_bullets, stats, hud, images, explosions,
+                            pickups):
     """Respond to bullet-enemy or bullet-ship collisions."""
     for enemy in enemies.sprites():
         if enemy.id is not 3:
@@ -300,6 +349,11 @@ def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship):
         for bullet in collide:
             enemy.health -= bullet.damage
             sounds.enemy_hit.play()
+    for bullet in enemy_bullets.sprites():
+        if pygame.sprite.collide_circle(ship, bullet) and not stats.ship_inv:
+            enemy_bullets.remove(bullet)
+            damage_ship(settings, stats, sounds, ship, hud, screen, images,
+                        explosions, pickups)
 
 
 def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds):
@@ -344,15 +398,15 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
     for star in stars.sprites():
         star.blitme()
     hud.update(stats)
-    for bullet in bullets.sprites():
-        bullet.draw_bullet()
-    for bullet in enemy_bullets.sprites():
-        bullet.blitme()
     for enemy in enemies.sprites():
         enemy.blitme()
     for explosion in explosions.sprites():
         explosion.blitme()
     for pickup in pickups.sprites():
         pickup.blitme()
+    for bullet in bullets.sprites():
+        bullet.draw_bullet()
     ship.blitme()
+    for bullet in enemy_bullets.sprites():
+        bullet.blitme()
     pygame.display.flip()

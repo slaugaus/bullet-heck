@@ -20,12 +20,12 @@ class Ship(Sprite):
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
         self.hitbox = images.hitbox
-        self.hb_rect = self.hitbox.get_rect()
+        self.hbrect = self.hitbox.get_rect()
         self.speed = settings.ship_speed
         # Place the ship in the vertical middle with some padding.
         self.rect.centery = self.screen_rect.centery
         self.rect.right = self.screen_rect.left
-        self.hb_rect.center = self.rect.center
+        self.hbrect.center = self.rect.center
         self.ready = False
         # Store the ship's center as decimals.
         self.centerx = float(self.rect.centerx)
@@ -73,7 +73,9 @@ class Ship(Sprite):
         self.move_digital(settings, images)
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
-        self.hb_rect.center = self.rect.center
+        self.hbrect.center = self.rect.center
+        self.stay_on_screen()
+        self.rect.center = self.hbrect.center
         if self.respawn_countdown is not 0:
             self.respawn_countdown -= 1
         if self.stats.ship_inv_timer > 0:
@@ -96,14 +98,15 @@ class Ship(Sprite):
             self.speed *= settings.diag_factor
         # If it's been animated in, allow movement.
         if self.ready:
-            if self.moving_right and self.rect.right < settings.screen_width:
+            if self.moving_right and self.hbrect.right < settings.screen_width:
                 self.centerx += self.speed
-            if self.moving_left and self.rect.left > 0:
+            if self.moving_left and self.hbrect.left > 0:
                 self.centerx -= self.speed
-            if self.moving_down and self.rect.bottom < settings.screen_height:
+            if self.moving_down and (self.hbrect.bottom <
+                                     settings.screen_height):
                 self.centery += self.speed
                 self.animdir = -1
-            if self.moving_up and self.rect.top > 0:
+            if self.moving_up and self.hbrect.top > 0:
                 self.centery -= self.speed
                 self.animdir = 1
 
@@ -132,6 +135,17 @@ class Ship(Sprite):
         self.moving_down = False
         self.moving_up = False
 
+    def stay_on_screen(self):
+        """Make sure that the ship's hitbox is always on the screen."""
+        if self.hbrect.right > self.settings.screen_width:
+            self.hbrect.right = self.settings.screen_width
+        if self.hbrect.left < 0:
+            self.hbrect.left = 0
+        if self.hbrect.bottom > self.settings.screen_height:
+            self.hbrect.bottom = self.settings.screen_height
+        if self.hbrect.top < 0:
+            self.hbrect.top = 0
+
     def animate(self):
         """Animate the ship."""
         self.index += self.animdir
@@ -145,7 +159,7 @@ class Ship(Sprite):
     def blitme(self):
         """Draw the ship and its hitbox."""
         self.screen.blit(self.image, self.rect)
-        self.screen.blit(self.hitbox, self.hb_rect)
+        self.screen.blit(self.hitbox, self.hbrect)
 
 
 class Enemy(Sprite):
@@ -163,10 +177,11 @@ class Enemy(Sprite):
         self.settings = settings
         self.screen = screen
         self.id = id
-        self.health = 3
-        self.can_damage_ship = True
+        self.health = settings.enemy_health[self.id-1]
         self.index = 0
-        self.images = images.enemy[id]
+        self.fire_cooldown = (settings.enemy_fire_cooldown[self.id-1] +
+                              random.randint(-10, 10))
+        self.images = images.enemy[self.id-1]
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
@@ -184,7 +199,7 @@ class Enemy(Sprite):
     def update(self):
         self.animate()
         self.image = self.images[self.index]
-        self.x -= self.settings.enemy_1_speed
+        self.x -= self.settings.enemy_speed[self.id-1]
         self.rect.x = self.x
 
     def blitme(self):
@@ -195,8 +210,8 @@ class Enemy(Sprite):
 class EnemyBullet(Sprite):
     """Manages enemy bullets."""
 
-    def __init__(self, settings, screen, images, start, speed=8, angle=0,
-                 offset=0):
+    def __init__(self, settings, screen, images, start, angle=0,
+                 offset=0, speed=8):
         """Create an enemy bullet at the specified location (start).
            The offset is relative to the angle."""
         super().__init__()
@@ -212,7 +227,6 @@ class EnemyBullet(Sprite):
         self.vector = pygame.math.Vector2(0, 0)
         self.vector.from_polar((self.speed, self.angle))
         [self.xspeed, self.yspeed] = self.vector
-        # print([self.xspeed, self.yspeed])
         self.image = images.enemy_bullet
         self.rect = self.image.get_rect()
         self.rect.center = self.start

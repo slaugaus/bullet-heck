@@ -53,7 +53,8 @@ def run_game():
         if stats.game_active:
             ship.update(settings, images)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds,
-                              enemy_bullets)
+                              enemy_bullets, images, stats, hud, explosions,
+                              pickups)
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
                                   stats, explosions, images, pickups, hud)
         gf.update_screen(settings, screen, stars, ship, bullets, enemies,
