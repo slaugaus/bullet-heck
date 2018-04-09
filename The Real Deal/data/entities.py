@@ -74,7 +74,8 @@ class Ship(Sprite):
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
         self.hbrect.center = self.rect.center
-        self.stay_on_screen()
+        if self.ready:
+            self.stay_on_screen()
         self.rect.center = self.hbrect.center
         if self.respawn_countdown is not 0:
             self.respawn_countdown -= 1

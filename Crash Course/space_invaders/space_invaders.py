@@ -37,10 +37,10 @@ def run_game():
                               bullets)
             gf.update_aliens(si_settings, screen, stats, sb, ship, aliens,
                              bullets)
-            clock.tick(60)
-            # print(clock.get_fps())
         gf.update_screen(si_settings, screen, stats, sb, ship, aliens, bullets,
                          play_button)
+        clock.tick(60)
+        # print(clock.get_fps())
 
 
 run_game()

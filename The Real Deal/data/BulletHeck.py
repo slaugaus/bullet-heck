@@ -45,7 +45,7 @@ def run_game():
         settings.gamepad_connected = False
     if not settings.mute_music:
         pygame.mixer.music.play(loops=-1)
-    # Main loop.
+    # Main loop
     while stats.done is False:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
                         sounds, enemies, images, enemy_bullets)
@@ -56,7 +56,10 @@ def run_game():
                               enemy_bullets, images, stats, hud, explosions,
                               pickups)
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
-                                  stats, explosions, images, pickups, hud)
+                                  stats, explosions, images, pickups, hud,
+                                  bullets, enemy_bullets)
+        # Update the explosions even if the game is paused.
+        gf.update_explosions(explosions)
         gf.update_screen(settings, screen, stars, ship, bullets, enemies,
                          explosions, pickups, hud, stats, enemy_bullets)
         clock.tick(settings.fps_limit)
