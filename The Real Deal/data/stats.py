@@ -28,11 +28,12 @@ class Stats():
         self.ship_inv = False
         self.ship_inv_timer = 1
 
-    def update_high_score(self):
-        """If the high score is beaten, update it and save the file."""
+    def update_high_score(self, hud):
+        """Update the high score if it's beaten."""
         if self.score > self.high_score:
             self.high_score = self.score
-            pickle.dump(self.high_score, self.file)
-            return True
-        else:
-            return False
+            hud.prep_high_score()
+
+    def save_high_score(self):
+        """Save the high score to a file."""
+        pickle.dump(self.high_score, self.file)

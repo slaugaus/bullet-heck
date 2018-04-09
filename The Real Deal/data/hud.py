@@ -52,6 +52,7 @@ class HUD():
         self.images = images
         self.text_color = settings.white
         self.font = pygame.font.Font("assets/unoestado.ttf", 32)
+        self.font_small = pygame.font.Font("assets/unoestado.ttf", 16)
         self.healthbar = Statbar(settings, screen, settings.red,
                                  stats.ship_health, settings.ship_health)
         self.invbar = Statbar(settings, screen, settings.blue,
@@ -62,6 +63,8 @@ class HUD():
         self.prep_statbars()
         self.prep_ship()
         self.prep_life_amount()
+        self.prep_score()
+        self.prep_high_score()
 
     def prep_statbars(self):
         self.healthbar.rect.x = 5
@@ -83,11 +86,28 @@ class HUD():
         self.lives_rect.left = self.ship.rect.right + 5
         self.lives_rect.centery = self.ship.rect.centery
 
+    def prep_score(self):
+        score_str = "Score: " + "{:,}".format(self.stats.score)
+        self.score_image = self.font.render(score_str, True, self.text_color)
+        self.score_rect = self.score_image.get_rect()
+        self.score_rect.left = 0
+        self.score_rect.bottom = self.settings.screen_height
+
+    def prep_high_score(self):
+        str = "High score: " + "{:,}".format(self.stats.high_score)
+        self.hs_image = self.font.render(str, True, self.text_color)
+        self.hs_rect = self.hs_image.get_rect()
+        self.hs_rect.left = 0
+        self.hs_rect.bottom = self.score_rect.top
+
     def update(self, stats):
-        """Update and draw the bars."""
+        """Update and draw the HUD."""
         self.ship.animate()
         self.ship.blitme()
         self.screen.blit(self.lives_image, self.lives_rect)
+        self.screen.blit(self.score_image, self.score_rect)
+        if not stats.game_active:
+            self.screen.blit(self.hs_image, self.hs_rect)
         self.invbar.update(stats.ship_inv_timer)
         self.healthbar.update(stats.ship_health)
         self.powerbar.update(stats.ship_level)

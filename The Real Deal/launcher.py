@@ -63,7 +63,7 @@ def reset_settings(confirm):
     """Reset the settings to the defaults, possibly asking to confirm."""
     if not confirm:
         gamepad_connected.set(False)
-        screen_res.set("1600 x 900")
+        screen_res.set("1366 x 768")
         gamepad_id.set(0)
         deadzone.set(0.2)
         axis_x.set(0)
@@ -198,9 +198,9 @@ en6_lb = ttk.Label(page2, text="Y axis ID:")
 en7 = ttk.Entry(page2, textvar=hat_id)
 en7_lb = ttk.Label(page2, text="Hat (D-pad) ID:")
 en8 = ttk.Entry(page2, textvar=but_A)
-en8_lb = ttk.Label(page2, text="ID of A (down) Button:")
+en8_lb = ttk.Label(page2, text="ID of fire button (A):")
 en9 = ttk.Entry(page2, textvar=but_B)
-en9_lb = ttk.Label(page2, text="ID of B (right) Button:")
+en9_lb = ttk.Label(page2, text="ID of Dodge Mode button (X):")
 but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 

@@ -11,6 +11,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
                           sounds)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            stats.save_high_score()
             stats.done = True
         if event.type == pygame.KEYDOWN:
             check_keydown_events(event, settings, ship)
@@ -76,6 +77,7 @@ def check_keydown_events(event, settings, ship):
 
 def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
     if event.key == pygame.K_ESCAPE:
+        stats.save_high_score()
         stats.done = True
     # There's definitely a better way to do this, but none of these will be in
     # the final product anyway
@@ -211,6 +213,9 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
     pickups.update()
     for enemy in enemies.sprites():
         if enemy.health <= 0:
+            stats.score += enemy.point_value
+            hud.prep_score()
+            stats.update_high_score(hud)
             if random.randint(1, 100) <= settings.pickup_chance:
                 spawn_pickup(enemy, settings, stats, screen, images, pickups)
                 if enemy.id == 2:
@@ -235,7 +240,8 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
                 pickup.rect.bottom <= 0 or
                 pickup.rect.top >= settings.screen_height):
             pickups.remove(pickup)
-    check_pickup_collisions(settings, screen, ship, pickups, stats, sounds)
+    check_pickup_collisions(settings, screen, ship, pickups, stats, sounds, hud
+                            )
 
 
 def update_explosions(explosions):
@@ -356,16 +362,22 @@ def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
                         explosions, pickups, enemies, enemy_bullets, bullets)
 
 
-def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds):
+def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds, hud
+                            ):
     """Respond to ship-pickup collisions."""
     for pickup in pickups.sprites():
         if pygame.sprite.collide_rect(ship, pickup) and ship.ready:
             sounds.levelup.play()
             if pickup.type == "h" and stats.ship_health < settings.ship_health:
                 stats.ship_health += 1
-            else:
+            elif stats.ship_level < settings.max_ship_level:
                 # If you get health when you don't need it, you just level up.
                 stats.ship_level += 1
+            else:
+                # If you need neither pickup, just increase the score.
+                stats.score += 500
+                hud.prep_score()
+                stats.update_high_score(hud)
             pickups.remove(pickup)
 
 

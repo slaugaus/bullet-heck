@@ -186,6 +186,7 @@ class Enemy(Sprite):
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
+        self.point_value = settings.enemy_points[self.id-1]
         # Collision info
         if self.id == 2:
             self.radius = 40
