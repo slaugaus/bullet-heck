@@ -16,7 +16,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
         if event.type == pygame.KEYDOWN:
             check_keydown_events(event, settings, ship)
             check_debug_keys(event, settings, screen, enemies, images, stats,
-                             ship)
+                             splash)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -78,7 +78,7 @@ def check_keydown_events(event, settings, ship):
         settings.autofire = True if settings.autofire is False else False
 
 
-def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
+def check_debug_keys(event, settings, screen, enemies, images, stats, splash):
     if event.key == pygame.K_ESCAPE:
         stats.save_high_score()
         stats.done = True
@@ -105,8 +105,7 @@ def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
             pygame.mouse.set_visible(False)
         else:
             pygame.mouse.set_visible(True)
-    if event.key == pygame.K_r:
-        ship.reset_pos()
+            splash.prep_msg("Resume")
 
 
 def check_keyup_events(event, settings, ship):
@@ -221,7 +220,7 @@ def spawn_pickup(entity, settings, stats, screen, images, pickups, type=None,
 
 def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
                        explosions, images, pickups, hud, bullets,
-                       enemy_bullets):
+                       enemy_bullets, splash):
     """Update the enemies and pickups."""
     enemies.update()
     pickups.update()
@@ -247,7 +246,8 @@ def update_enemy_stuff(settings, screen, ship, enemies, sounds, stats,
         if pygame.sprite.collide_circle(ship, enemy) and not stats.ship_inv:
             enemy.health -= 1
             damage_ship(settings, stats, sounds, ship, hud, screen, images,
-                        explosions, pickups, enemies, enemy_bullets, bullets)
+                        explosions, pickups, enemies, enemy_bullets, bullets,
+                        splash)
     for pickup in pickups.sprites():
         if (pickup.rect.right <= 0 or
                 pickup.rect.left >= settings.screen_width or
@@ -333,7 +333,8 @@ def fire_enemy_bullets(settings, screen, images, enemies, enemy_bullets,
 
 
 def update_bullets(settings, screen, ship, bullets, enemies, sounds,
-                   enemy_bullets, images, stats, hud, explosions, pickups):
+                   enemy_bullets, images, stats, hud, explosions, pickups,
+                   splash):
     """Update everything related to bullets."""
     fire_enemy_bullets(settings, screen, images, enemies, enemy_bullets,
                        sounds)
@@ -352,12 +353,12 @@ def update_bullets(settings, screen, ship, bullets, enemies, sounds,
             enemy_bullets.remove(bullet)
     check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
                             enemy_bullets, stats, hud, images, explosions,
-                            pickups)
+                            pickups, splash)
 
 
 def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
                             enemy_bullets, stats, hud, images, explosions,
-                            pickups):
+                            pickups, splash):
     """Respond to bullet-enemy or bullet-ship collisions."""
     for enemy in enemies.sprites():
         if enemy.id is not 3:
@@ -373,7 +374,8 @@ def check_bullet_collisions(settings, screen, enemies, bullets, sounds, ship,
         if pygame.sprite.collide_circle(ship, bullet) and not stats.ship_inv:
             enemy_bullets.remove(bullet)
             damage_ship(settings, stats, sounds, ship, hud, screen, images,
-                        explosions, pickups, enemies, enemy_bullets, bullets)
+                        explosions, pickups, enemies, enemy_bullets, bullets,
+                        splash)
 
 
 def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds, hud
@@ -396,7 +398,7 @@ def check_pickup_collisions(settings, screen, ship, pickups, stats, sounds, hud
 
 
 def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
-                pickups, enemies, enemy_bullets, bullets):
+                pickups, enemies, enemy_bullets, bullets, splash):
     """Damage the ship."""
     if stats.ship_health > 1:
         stats.ship_health -= 1
@@ -427,9 +429,11 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         bullets.empty()
         enemy_bullets.empty()
         pickups.empty()
+        splash.prep_msg("Restart")
         stats.game_active = False
         pygame.mouse.set_visible(True)
         stats.reset_stats()
+        hud.prep_life_amount()
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,

@@ -16,6 +16,7 @@ class Stats():
         self.settings = settings
         self.game_active = False
         self.done = False
+        self.fps = 0
         self.reset_stats()
 
     def reset_stats(self):

@@ -55,10 +55,10 @@ def run_game():
             ship.update(settings, images)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds,
                               enemy_bullets, images, stats, hud, explosions,
-                              pickups)
+                              pickups, splash)
             gf.update_enemy_stuff(settings, screen, ship, enemies, sounds,
                                   stats, explosions, images, pickups, hud,
-                                  bullets, enemy_bullets)
+                                  bullets, enemy_bullets, splash)
         # Update the explosions even if the game is paused.
         gf.update_explosions(explosions)
         gf.update_screen(settings, screen, stars, ship, bullets, enemies,
@@ -66,7 +66,7 @@ def run_game():
                          splash)
         clock.tick(settings.fps_limit)
         if settings.show_fps:
-            print(clock.get_fps())
+            stats.fps = clock.get_fps()
 
 
 run_game()

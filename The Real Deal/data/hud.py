@@ -62,6 +62,7 @@ class HUD():
         self.prep_life_amount()
         self.prep_score()
         self.prep_high_score()
+        self.prep_fps()
 
     def prep_statbars(self):
         self.healthbar.rect.x = 5
@@ -91,11 +92,18 @@ class HUD():
         self.score_rect.bottom = self.settings.screen_height
 
     def prep_high_score(self):
-        str = "High score: " + "{:,}".format(self.stats.high_score)
-        self.hs_image = self.font.render(str, True, self.text_color)
+        hs_str = "High score: " + "{:,}".format(self.stats.high_score)
+        self.hs_image = self.font.render(hs_str, True, self.text_color)
         self.hs_rect = self.hs_image.get_rect()
         self.hs_rect.left = 0
         self.hs_rect.bottom = self.score_rect.top
+
+    def prep_fps(self):
+        fps_str = str(int(self.stats.fps)) + " FPS"
+        self.fps_image = self.font_small.render(fps_str, True, self.text_color)
+        self.fps_rect = self.fps_image.get_rect()
+        self.fps_rect.right = self.settings.screen_width
+        self.fps_rect.bottom = self.settings.screen_height
 
     def update(self, stats):
         """Update and draw the HUD."""
@@ -105,6 +113,9 @@ class HUD():
         self.screen.blit(self.score_image, self.score_rect)
         if not stats.game_active:
             self.screen.blit(self.hs_image, self.hs_rect)
+        if self.settings.show_fps:
+            self.prep_fps()
+            self.screen.blit(self.fps_image, self.fps_rect)
         self.invbar.update(stats.ship_inv_timer)
         self.healthbar.update(stats.ship_health)
         self.powerbar.update(stats.ship_level)
@@ -125,18 +136,20 @@ class SplashScreen():
         self.dimmer = pygame.Surface((settings.screen_width,
                                       settings.screen_height))
         self.dimmer.set_alpha(128)
+        self.button_rect = pygame.Rect(0, 0, self.logo_rect.width, 41)
         self.prep_msg()
-        self.button_rect = pygame.Rect(0, 0, self.logo_rect.width,
-                                       self.text_rect.height+3)
         self.center()
 
-    def prep_msg(self):
+    def prep_msg(self, msg="Play"):
+        self.msg = msg
         self.text = self.font.render(self.msg, True, self.text_color)
         self.text_rect = self.text.get_rect()
+        self.text_rect.centerx = self.button_rect.centerx
+        self.text_rect.centery = self.button_rect.centery - 2
 
     def center(self):
         self.combined_rect = pygame.Rect(0, 0, self.logo_rect.width,
-                                         self.logo_rect.height+
+                                         self.logo_rect.height +
                                          self.button_rect.height)
         self.combined_rect.center = self.screen_rect.center
         self.logo_rect.top = self.combined_rect.top
@@ -145,7 +158,6 @@ class SplashScreen():
         self.button_rect.left = self.combined_rect.left
         self.text_rect.centerx = self.button_rect.centerx
         self.text_rect.centery = self.button_rect.centery - 2
-
 
     def draw(self):
         self.screen.blit(self.dimmer, (0, 0))

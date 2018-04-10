@@ -172,7 +172,7 @@ notebook = ttk.Notebook(sett_win)
 page1 = tk.Frame(sett_win)
 page1.columnconfigure(0, weight=1)  # fills the frame width
 notebook.add(page1, text="General settings")
-cb2 = ttk.Checkbutton(page1, text="Show framerate in console", var=show_fps)
+cb2 = ttk.Checkbutton(page1, text="Show framerate on screen", var=show_fps)
 cb3 = ttk.Checkbutton(page1, text="Don't show the launcher again",
                       var=skip_launcher, command=show_skip_msg)
 cb4 = ttk.Checkbutton(page1, text="Fire bullets automatically", var=autofire)
@@ -198,9 +198,9 @@ en6_lb = ttk.Label(page2, text="Y axis ID:")
 en7 = ttk.Entry(page2, textvar=hat_id)
 en7_lb = ttk.Label(page2, text="Hat (D-pad) ID:")
 en8 = ttk.Entry(page2, textvar=but_A)
-en8_lb = ttk.Label(page2, text="ID of fire button (A):")
+en8_lb = ttk.Label(page2, text="Fire button (A):")
 en9 = ttk.Entry(page2, textvar=but_B)
-en9_lb = ttk.Label(page2, text="ID of Dodge Mode button (X):")
+en9_lb = ttk.Label(page2, text="Dodge Mode button (X):")
 but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 
