@@ -7,7 +7,7 @@ import game_functions as gf
 from entities import Ship
 from stats import Stats
 from preloader import Sounds, Images
-from hud import HUD
+from hud import HUD, SplashScreen
 
 
 def run_game():
@@ -24,9 +24,10 @@ def run_game():
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
     pygame.display.set_caption("Bullet Heck!")
-    # Initialize the stats and HUD
+    # Initialize the stats, HUD, and splash screen
     stats = Stats(settings)
     hud = HUD(settings, screen, stats, images)
+    splash = SplashScreen(settings, images, screen)
     # Create the ship and groups for everything else
     ship = Ship(settings, screen, stats, images)
     stars = Group()
@@ -48,7 +49,7 @@ def run_game():
     # Main loop
     while stats.done is False:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
-                        sounds, enemies, images, enemy_bullets)
+                        sounds, enemies, images, enemy_bullets, splash)
         gf.update_stars(settings, screen, stars, images)
         if stats.game_active:
             ship.update(settings, images)
@@ -61,7 +62,8 @@ def run_game():
         # Update the explosions even if the game is paused.
         gf.update_explosions(explosions)
         gf.update_screen(settings, screen, stars, ship, bullets, enemies,
-                         explosions, pickups, hud, stats, enemy_bullets)
+                         explosions, pickups, hud, stats, enemy_bullets,
+                         splash)
         clock.tick(settings.fps_limit)
         if settings.show_fps:
             print(clock.get_fps())

@@ -4,7 +4,7 @@ from entities import Star, Bullet, Enemy, EnemyBullet, Explosion, Pickup
 
 
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
-                 enemies, images, enemy_bullets):
+                 enemies, images, enemy_bullets, splash):
     """Respond to key, gamepad, and mouse events."""
     if stats.game_active:
         check_repeat_keys(settings, screen, ship, bullets, stats, gamepad,
@@ -29,6 +29,9 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
         elif event.type == pygame.JOYBUTTONUP:
             if event.button == settings.but_B:
                 ship.dodge_mode = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(settings, splash, stats, mouse_x, mouse_y)
 
 
 def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
@@ -98,6 +101,10 @@ def check_debug_keys(event, settings, screen, enemies, images, stats, ship):
         stats.ship_level += 1
     if event.key == pygame.K_p:
         stats.game_active = True if stats.game_active is False else False
+        if stats.game_active:
+            pygame.mouse.set_visible(False)
+        else:
+            pygame.mouse.set_visible(True)
     if event.key == pygame.K_r:
         ship.reset_pos()
 
@@ -153,6 +160,13 @@ def check_hat_events(gamepad, ship, settings):
         ship.moving_up = True
     else:
         ship.moving_down, ship.moving_up = False, False
+
+
+def check_play_button(settings, splash, stats, mouse_x, mouse_y):
+    clicked = splash.button_rect.collidepoint(mouse_x, mouse_y)
+    if clicked and not stats.game_active:
+        pygame.mouse.set_visible(False)
+        stats.game_active = True
 
 
 def update_stars(settings, screen, stars, images):
@@ -402,7 +416,7 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
             spawn_pickup(ship, settings, stats, screen, images, pickups, "p",
                          True)
     else:
-        print("Game over (press P to unpause)")
+        print("Game over")
         stats.ship_health -= 1
         explode(settings, ship, screen, images, explosions, sounds)
         ship.reset_pos()
@@ -414,12 +428,12 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         enemy_bullets.empty()
         pickups.empty()
         stats.game_active = False
+        pygame.mouse.set_visible(True)
         stats.reset_stats()
-        hud.prep_life_amount()
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
-                  pickups, hud, stats, enemy_bullets):
+                  pickups, hud, stats, enemy_bullets, splash):
     """Update and flip any images onscreen."""
     screen.fill(settings.black)
     for star in stars.sprites():
@@ -436,4 +450,6 @@ def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,
     ship.blitme()
     for bullet in enemy_bullets.sprites():
         bullet.blitme()
+    if not stats.game_active:
+        splash.draw()
     pygame.display.flip()

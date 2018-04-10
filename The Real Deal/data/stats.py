@@ -14,7 +14,7 @@ class Stats():
             self.file = open("../highscore.pickle", mode="r+b")
             self.high_score = 0
         self.settings = settings
-        self.game_active = True
+        self.game_active = False
         self.done = False
         self.reset_stats()
 

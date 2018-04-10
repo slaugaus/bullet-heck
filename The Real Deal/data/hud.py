@@ -1,12 +1,10 @@
 import pygame
-import pygame.font
 from entities import Ship
 
 
 class Statbar():
-    """A stat bar for use in the HUD."""
-
     def __init__(self, settings, screen, color, stat, statmax, parent=None):
+        """A stat bar for use in the HUD."""
         self.screen = screen
         self.settings = settings
         self.stat = stat
@@ -43,9 +41,8 @@ class Statbar():
 
 
 class HUD():
-    """The HUD."""
-
     def __init__(self, settings, screen, stats, images):
+        """The HUD."""
         self.screen = screen
         self.settings = settings
         self.stats = stats
@@ -111,3 +108,47 @@ class HUD():
         self.invbar.update(stats.ship_inv_timer)
         self.healthbar.update(stats.ship_health)
         self.powerbar.update(stats.ship_level)
+
+
+class SplashScreen():
+    def __init__(self, settings, images, screen):
+        """A logo, a "Play" button, and a thing to dim the screen."""
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+        self.settings = settings
+        self.msg = "Play"
+        self.logo = images.logo
+        self.logo_rect = self.logo.get_rect()
+        self.button_color = settings.green
+        self.text_color = settings.white
+        self.font = pygame.font.Font("assets/unoestado.ttf", 32)
+        self.dimmer = pygame.Surface((settings.screen_width,
+                                      settings.screen_height))
+        self.dimmer.set_alpha(128)
+        self.prep_msg()
+        self.button_rect = pygame.Rect(0, 0, self.logo_rect.width,
+                                       self.text_rect.height+3)
+        self.center()
+
+    def prep_msg(self):
+        self.text = self.font.render(self.msg, True, self.text_color)
+        self.text_rect = self.text.get_rect()
+
+    def center(self):
+        self.combined_rect = pygame.Rect(0, 0, self.logo_rect.width,
+                                         self.logo_rect.height+
+                                         self.button_rect.height)
+        self.combined_rect.center = self.screen_rect.center
+        self.logo_rect.top = self.combined_rect.top
+        self.logo_rect.left = self.combined_rect.left
+        self.button_rect.bottom = self.combined_rect.bottom
+        self.button_rect.left = self.combined_rect.left
+        self.text_rect.centerx = self.button_rect.centerx
+        self.text_rect.centery = self.button_rect.centery - 2
+
+
+    def draw(self):
+        self.screen.blit(self.dimmer, (0, 0))
+        self.screen.blit(self.logo, self.logo_rect)
+        pygame.draw.rect(self.screen, self.button_color, self.button_rect)
+        self.screen.blit(self.text, self.text_rect)
