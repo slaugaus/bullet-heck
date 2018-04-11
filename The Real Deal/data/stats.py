@@ -28,6 +28,7 @@ class Stats():
         self.ship_level = 0
         self.ship_inv = False
         self.ship_inv_timer = 1
+        self.enemy_timer = 0
 
     def update_high_score(self, hud):
         """Update the high score if it's beaten."""

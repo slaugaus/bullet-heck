@@ -49,7 +49,5 @@ class Settings():
         self.enemy_health = [3, 6, 2, 3, 3, 3]
         self.enemy_fire_cooldown = [-1, -1, 90, 90, 90, 90]
         self.enemy_points = [50, 100, 25, 75, 75, 75]
+        self.enemy_timer = 0
         self.pickup_chance = 25  # percent
-
-    def reset_settings(self):
-        """Reset any settings that change during the game."""

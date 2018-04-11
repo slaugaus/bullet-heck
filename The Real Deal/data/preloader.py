@@ -41,6 +41,8 @@ class Images():
 
     def __init__(self):
         """Load each of the sprites and sprite lists."""
+        # I know these could all be done with gfxdraw,
+        # but they wouldn't look as good.
         self.hitbox = pygame.image.load("assets/hitbox.png")
         self.hitbox_inv = pygame.image.load("assets/hitbox_inv.png")
         self.star = pygame.image.load("assets/star.png")

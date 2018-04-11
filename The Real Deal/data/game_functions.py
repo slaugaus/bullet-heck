@@ -4,7 +4,7 @@ from entities import Star, Bullet, Enemy, EnemyBullet, Explosion, Pickup
 
 
 def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
-                 enemies, images, enemy_bullets, splash):
+                 enemies, images, enemy_bullets, splash, hud):
     """Respond to key, gamepad, and mouse events."""
     if stats.game_active:
         check_repeat_keys(settings, screen, ship, bullets, stats, gamepad,
@@ -31,7 +31,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
                 ship.dodge_mode = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(settings, splash, stats, mouse_x, mouse_y)
+            check_play_button(settings, splash, stats, mouse_x, mouse_y, hud)
 
 
 def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
@@ -161,11 +161,14 @@ def check_hat_events(gamepad, ship, settings):
         ship.moving_down, ship.moving_up = False, False
 
 
-def check_play_button(settings, splash, stats, mouse_x, mouse_y):
+def check_play_button(settings, splash, stats, mouse_x, mouse_y, hud):
     clicked = splash.button_rect.collidepoint(mouse_x, mouse_y)
     if clicked and not stats.game_active:
         pygame.mouse.set_visible(False)
         stats.game_active = True
+        # Necessary if the game is lost, but not harmful if it isn't.
+        hud.prep_life_amount()
+        hud.prep_score()
 
 
 def update_stars(settings, screen, stars, images):
@@ -180,13 +183,17 @@ def update_stars(settings, screen, stars, images):
 
 
 def spawn_enemy(settings, screen, enemies, images, id):
-    """Spawn an enemy."""
+    """Spawn one enemy."""
     enemy = Enemy(settings, screen, images, id)
     enemy.x = settings.screen_width
     enemy.y = random.randint(0, settings.screen_height - enemy.rect.height)
     enemy.rect.x = enemy.x
     enemy.rect.y = enemy.y
     enemies.add(enemy)
+
+
+def spawn_enemies(settings, screen, enemies, images, id, stats):
+    """Spawn enemies based on various timers, random numbers, and the score."""
 
 
 def explode(settings, entity, screen, images, explosions, sounds, size="s"):
@@ -433,7 +440,6 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         stats.game_active = False
         pygame.mouse.set_visible(True)
         stats.reset_stats()
-        hud.prep_life_amount()
 
 
 def update_screen(settings, screen, stars, ship, bullets, enemies, explosions,

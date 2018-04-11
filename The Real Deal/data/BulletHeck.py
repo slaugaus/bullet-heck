@@ -49,7 +49,7 @@ def run_game():
     # Main loop
     while stats.done is False:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
-                        sounds, enemies, images, enemy_bullets, splash)
+                        sounds, enemies, images, enemy_bullets, splash, hud)
         gf.update_stars(settings, screen, stars, images)
         if stats.game_active:
             ship.update(settings, images)

@@ -139,10 +139,12 @@ def close():
 def show_credits():
     msg = ("Sound effects obtained from www.zapsplat.com\n"
            "Explosion graphics created at www.explosiongenerator.com\n"
+           "Font is \"Uno Estado\" by Dan Zadorozny (Iconian Fonts)\n"
            "\"Space Fighter Loop\"\n"
            "Kevin MacLeod (incompetech.com)\n"
            "Licensed under Creative Commons: By Attribution 3.0 License\n"
-           "http://creativecommons.org/licenses/by/3.0/")
+           "http://creativecommons.org/licenses/by/3.0/\n"
+           "All other assets were created by me, Austin Slaughter.")
     messagebox.showinfo(title="Credits", message=(msg))
 
 
@@ -159,7 +161,7 @@ main_win.protocol("WM_DELETE_WINDOW", close)
 # Define all of the widgets.
 # Main window
 title = Image.open("data/assets/logo.png")
-title = title.resize((400, 225), resample=Image.BICUBIC)
+title = title.resize((400, 225), resample=Image.BILINEAR)
 title = ImageTk.PhotoImage(title)
 logo = ttk.Label(main_win, image=title)
 logo.image = title  # necessary in case the image gets garbage-collected
@@ -172,7 +174,7 @@ notebook = ttk.Notebook(sett_win)
 page1 = tk.Frame(sett_win)
 page1.columnconfigure(0, weight=1)  # fills the frame width
 notebook.add(page1, text="General settings")
-cb2 = ttk.Checkbutton(page1, text="Show framerate on screen", var=show_fps)
+cb2 = ttk.Checkbutton(page1, text="Show framerate", var=show_fps)
 cb3 = ttk.Checkbutton(page1, text="Don't show the launcher again",
                       var=skip_launcher, command=show_skip_msg)
 cb4 = ttk.Checkbutton(page1, text="Fire bullets automatically", var=autofire)
