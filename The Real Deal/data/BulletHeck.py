@@ -51,8 +51,10 @@ def run_game():
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,
                         sounds, enemies, images, enemy_bullets, splash, hud)
         gf.update_stars(settings, screen, stars, images)
+        gf.manage_game_level(settings, stats)
         if stats.game_active:
             ship.update(settings, images)
+            gf.spawn_enemies(settings, screen, enemies, images, id, stats)
             gf.update_bullets(settings, screen, ship, bullets, enemies, sounds,
                               enemy_bullets, images, stats, hud, explosions,
                               pickups, splash)

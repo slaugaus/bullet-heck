@@ -193,7 +193,25 @@ def spawn_enemy(settings, screen, enemies, images, id):
 
 
 def spawn_enemies(settings, screen, enemies, images, id, stats):
-    """Spawn enemies based on various timers, random numbers, and the score."""
+    """Spawn enemies based on a timer, random numbers, and the game level."""
+    stats.enemy_timer -= 1
+    if stats.enemy_timer == 0:
+        if stats.game_level == 0:
+            spawn_enemy(settings, screen, enemies, images, 1)
+        if stats.game_level == 1:
+            spawn_enemy(settings, screen, enemies, images, 1)
+            spawn_enemy(settings, screen, enemies, images, 1)
+        if stats.game_level == 2:
+            spawn_enemy(settings, screen, enemies, images, 2)
+        stats.enemy_timer = 120 + random.randint(-10, 10)
+
+
+def manage_game_level(settings, stats):
+    """Manage the game level based on the score."""
+    if stats.score >= 250:
+        stats.game_level = 1
+    if stats.score >= 1000:
+        stats.game_level = 2
 
 
 def explode(settings, entity, screen, images, explosions, sounds, size="s"):
@@ -276,20 +294,20 @@ def update_explosions(explosions):
 def fire_bullet(settings, screen, ship, bullets, sounds, stats):
     """Fire a pattern of bullets based on the ship's level."""
     if len(bullets) < settings.bullet_limit:
-        if stats.ship_level == 0:
+        if 0 <= stats.ship_level:
             bullet1 = Bullet(settings, screen, ship)
-        if stats.ship_level == 1:
+        if 2 <= stats.ship_level < 4:
             bullet1 = Bullet(settings, screen, ship, damage=2, height=4)
-        if stats.ship_level == 2:
+        if 4 <= stats.ship_level < 6:
             bullet1 = Bullet(settings, screen, ship, y_offset=6)
             bullet2 = Bullet(settings, screen, ship, y_offset=-6)
             bullets.add(bullet2)
-        if stats.ship_level == 3:
+        if 6 <= stats.ship_level < 8:
             bullet1 = Bullet(settings, screen, ship, y_offset=6)
             bullet2 = Bullet(settings, screen, ship, y_offset=-6)
             bullet3 = Bullet(settings, screen, ship, speed=21)
             bullets.add(bullet2, bullet3)
-        if stats.ship_level >= 4:
+        if 8 <= stats.ship_level:
             bullet1 = Bullet(settings, screen, ship, y_offset=6)
             bullet2 = Bullet(settings, screen, ship, y_offset=-6)
             bullet3 = Bullet(settings, screen, ship, 0, 4, 15, 2, 21)
