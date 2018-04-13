@@ -47,7 +47,8 @@ axis_x = tk.IntVar(sett_win)
 axis_y = tk.IntVar(sett_win)
 hat_id = tk.IntVar(sett_win)
 but_A = tk.IntVar(sett_win)
-but_B = tk.IntVar(sett_win)
+but_X = tk.IntVar(sett_win)
+but_S = tk.IntVar(sett_win)
 show_fps = tk.BooleanVar(sett_win)
 skip_launcher = tk.BooleanVar(sett_win)
 autofire = tk.BooleanVar(sett_win)
@@ -55,8 +56,8 @@ mute_music = tk.BooleanVar(sett_win)
 mute_sound = tk.BooleanVar(sett_win)
 
 var_list = [gamepad_connected, screen_res, gamepad_id, deadzone, axis_x,
-            axis_y, hat_id, but_A, but_B, show_fps, skip_launcher, autofire,
-            mute_music, mute_sound]
+            axis_y, hat_id, but_A, but_X, but_S, show_fps, skip_launcher,
+            autofire, mute_music, mute_sound]
 
 
 def reset_settings(confirm):
@@ -70,7 +71,8 @@ def reset_settings(confirm):
         axis_y.set(1)
         hat_id.set(0)
         but_A.set(0)
-        but_B.set(1)
+        but_X.set(2)
+        but_S.set(7)
         show_fps.set(False)
         skip_launcher.set(False)
         autofire.set(False)
@@ -201,8 +203,10 @@ en7 = ttk.Entry(page2, textvar=hat_id)
 en7_lb = ttk.Label(page2, text="Hat (D-pad) ID:")
 en8 = ttk.Entry(page2, textvar=but_A)
 en8_lb = ttk.Label(page2, text="Fire button (A):")
-en9 = ttk.Entry(page2, textvar=but_B)
+en9 = ttk.Entry(page2, textvar=but_X)
 en9_lb = ttk.Label(page2, text="Dodge Mode button (X):")
+en10 = ttk.Entry(page2, textvar=but_S)
+en10_lb = ttk.Label(page2, text="Pause button (Start):")
 but_gptest = ttk.Button(page2, text="Controller Test",
                         command=lambda: launch("controllertest.py"))
 
@@ -246,7 +250,9 @@ en8_lb.grid(row=6, sticky="e")
 en8.grid(row=6, column=1)
 en9_lb.grid(row=7, sticky="e")
 en9.grid(row=7, column=1)
-but_gptest.grid(row=8, columnspan=2, sticky="we")
+en10_lb.grid(row=8, sticky="e")
+en10.grid(row=8, column=1)
+but_gptest.grid(row=9, columnspan=2, sticky="we")
 
 # Check resolution.
 check_res()

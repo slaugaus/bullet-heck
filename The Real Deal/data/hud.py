@@ -142,6 +142,8 @@ class SplashScreen():
 
     def prep_msg(self, msg="Play"):
         self.msg = msg
+        if self.settings.gamepad_connected:
+            self.msg += " (press Start)"
         self.text = self.font.render(self.msg, True, self.text_color)
         self.text_rect = self.text.get_rect()
         self.text_rect.centerx = self.button_rect.centerx

@@ -24,6 +24,14 @@ def run_game():
     screen = pygame.display.set_mode((settings.screen_width,
                                       settings.screen_height))
     pygame.display.set_caption("Bullet Heck!")
+    # Try to create a joystick object
+    try:
+        gamepad = Joystick(settings.gamepad_id)
+        gamepad.init()
+        settings.gamepad_connected = True
+    except pygame.error:
+        gamepad = None
+        settings.gamepad_connected = False
     # Initialize the stats, HUD, and splash screen
     stats = Stats(settings)
     hud = HUD(settings, screen, stats, images)
@@ -36,14 +44,6 @@ def run_game():
     enemy_bullets = Group()
     explosions = Group()
     pickups = Group()
-    # Try to create a joystick object
-    try:
-        gamepad = Joystick(settings.gamepad_id)
-        gamepad.init()
-        settings.gamepad_connected = True
-    except pygame.error:
-        gamepad = None
-        settings.gamepad_connected = False
     if not settings.mute_music:
         pygame.mixer.music.play(loops=-1)
     # Main loop

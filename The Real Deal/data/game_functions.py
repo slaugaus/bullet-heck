@@ -24,10 +24,9 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
         elif event.type == pygame.JOYHATMOTION:
             check_hat_events(gamepad, ship, settings)
         elif event.type == pygame.JOYBUTTONDOWN:
-            if event.button == settings.but_B:
-                ship.dodge_mode = True
+            check_joydown_events(event, settings, ship, stats, splash)
         elif event.type == pygame.JOYBUTTONUP:
-            if event.button == settings.but_B:
+            if event.button == settings.but_X:
                 ship.dodge_mode = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -159,6 +158,18 @@ def check_hat_events(gamepad, ship, settings):
         ship.moving_up = True
     else:
         ship.moving_down, ship.moving_up = False, False
+
+
+def check_joydown_events(event, settings, ship, stats, splash):
+    if event.button == settings.but_X:
+        ship.dodge_mode = True
+    elif event.button == settings.but_S:
+        stats.game_active = True if stats.game_active is False else False
+        if stats.game_active:
+            pygame.mouse.set_visible(False)
+        else:
+            pygame.mouse.set_visible(True)
+            splash.prep_msg("Resume")
 
 
 def check_play_button(settings, splash, stats, mouse_x, mouse_y, hud):

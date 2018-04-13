@@ -13,8 +13,8 @@ class Settings():
             vars = pickle.load(file)
             [self.gamepad_connected, self.screen_res, self.gamepad_id,
              self.deadzone, self.axis_x, self.axis_y, self.hat_id, self.but_A,
-             self.but_B, self.show_fps, skip_launcher, self.autofire,
-             self.mute_music, self.mute_sound] = vars
+             self.but_X, self.but_S, self.show_fps, skip_launcher,
+             self.autofire, self.mute_music, self.mute_sound] = vars
         except (FileNotFoundError, EOFError, ValueError):
             print("ERROR: Couldn't load from settings.pickle!\n"
                   "Did you run the launcher?")
@@ -50,4 +50,4 @@ class Settings():
         self.enemy_fire_cooldown = [-1, -1, 90, 90, 90, 90]
         self.enemy_points = [50, 100, 25, 75, 75, 75]
         self.enemy_timer = 150  # 2.5 seconds before first enemy
-        self.pickup_chance = 10  # percent
+        self.pickup_chance = 15  # percent

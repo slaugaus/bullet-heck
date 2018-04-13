@@ -114,17 +114,17 @@ class Ship(Sprite):
     def move_analog(self, settings):
         """Move the ship based on analog stick movement."""
         if self.ready:
-            if self.an_right > 0 and self.rect.right < settings.screen_width:
+            if self.an_right > 0 and self.hbrect.right < settings.screen_width:
                 self.centerx += self.an_right * self.speed
                 self.cancel_digital()
-            if self.an_left < 0 and self.rect.left > 0:
+            if self.an_left < 0 and self.hbrect.left > 0:
                 self.centerx += self.an_left * self.speed
                 self.cancel_digital()
-            if self.an_up < 0 and self.rect.top > 0:
+            if self.an_up < 0 and self.hbrect.top > 0:
                 self.centery += self.an_up * self.speed
                 self.animdir = 1
                 self.cancel_digital()
-            if self.an_down > 0 and self.rect.bottom < settings.screen_height:
+            if self.an_down > 0 and self.hbrect.bottom<settings.screen_height:
                 self.centery += self.an_down * self.speed
                 self.animdir = -1
                 self.cancel_digital()
