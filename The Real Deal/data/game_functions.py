@@ -14,9 +14,8 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
             stats.save_high_score()
             stats.done = True
         if event.type == pygame.KEYDOWN:
-            check_keydown_events(event, settings, ship)
-            check_debug_keys(event, settings, screen, enemies, images, stats,
-                             splash)
+            check_keydown_events(event, settings, ship, stats, splash, hud)
+            check_debug_keys(event, settings, screen, enemies, images, stats)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -60,7 +59,7 @@ def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
             stats.bullet_cooldown -= 1
 
 
-def check_keydown_events(event, settings, ship):
+def check_keydown_events(event, settings, ship, stats, splash, hud):
     """Respond to pressed keys."""
     # Note: Any wacky keypress limits are your keyboard's fault.
     if event.key == pygame.K_RIGHT:
@@ -75,9 +74,20 @@ def check_keydown_events(event, settings, ship):
         ship.dodge_mode = True
     if event.key == pygame.K_a:
         settings.autofire = True if settings.autofire is False else False
+    if event.key == pygame.K_p:
+        stats.game_active = True if stats.game_active is False else False
+        if stats.game_active:
+            pygame.mouse.set_visible(False)
+            pygame.mixer.music.unpause()
+            hud.prep_life_amount()
+            hud.prep_score()
+        else:
+            pygame.mouse.set_visible(True)
+            pygame.mixer.music.pause()
+            splash.prep_msg("Resume")
 
 
-def check_debug_keys(event, settings, screen, enemies, images, stats, splash):
+def check_debug_keys(event, settings, screen, enemies, images, stats):
     if event.key == pygame.K_ESCAPE:
         stats.save_high_score()
         stats.done = True
@@ -98,13 +108,6 @@ def check_debug_keys(event, settings, screen, enemies, images, stats, splash):
     if event.key == pygame.K_l:
         print("Level up!")
         stats.ship_level += 1
-    if event.key == pygame.K_p:
-        stats.game_active = True if stats.game_active is False else False
-        if stats.game_active:
-            pygame.mouse.set_visible(False)
-        else:
-            pygame.mouse.set_visible(True)
-            splash.prep_msg("Resume")
 
 
 def check_keyup_events(event, settings, ship):
@@ -160,15 +163,19 @@ def check_hat_events(gamepad, ship, settings):
         ship.moving_down, ship.moving_up = False, False
 
 
-def check_joydown_events(event, settings, ship, stats, splash):
+def check_joydown_events(event, settings, ship, stats, splash, hud):
     if event.button == settings.but_X:
         ship.dodge_mode = True
     elif event.button == settings.but_S:
         stats.game_active = True if stats.game_active is False else False
         if stats.game_active:
             pygame.mouse.set_visible(False)
+            pygame.mixer.music.unpause()
+            hud.prep_life_amount()
+            hud.prep_score()
         else:
             pygame.mouse.set_visible(True)
+            pygame.mixer.music.pause()
             splash.prep_msg("Resume")
 
 
@@ -176,6 +183,7 @@ def check_play_button(settings, splash, stats, mouse_x, mouse_y, hud):
     clicked = splash.button_rect.collidepoint(mouse_x, mouse_y)
     if clicked and not stats.game_active:
         pygame.mouse.set_visible(False)
+        pygame.mixer.music.unpause()
         stats.game_active = True
         # Necessary if the game is lost, but not harmful if it isn't.
         hud.prep_life_amount()
@@ -454,7 +462,6 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
             spawn_pickup(ship, settings, stats, screen, images, pickups, "p",
                          True)
     else:
-        print("Game over")
         stats.ship_health -= 1
         explode(settings, ship, screen, images, explosions, sounds)
         ship.reset_pos()
@@ -467,6 +474,7 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         pickups.empty()
         splash.prep_msg("Restart")
         stats.game_active = False
+        pygame.mixer.music.pause()
         pygame.mouse.set_visible(True)
         stats.reset_stats()
 

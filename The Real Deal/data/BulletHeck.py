@@ -46,6 +46,8 @@ def run_game():
     pickups = Group()
     if not settings.mute_music:
         pygame.mixer.music.play(loops=-1)
+    # Pause the music by default
+    pygame.mixer.music.pause()
     # Main loop
     while stats.done is False:
         gf.check_events(settings, screen, ship, gamepad, bullets, stats,

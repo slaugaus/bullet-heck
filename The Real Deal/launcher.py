@@ -15,14 +15,15 @@ try:
     file = open("settings.pickle", mode="r+b")
     vars_to_load = pickle.load(file)
     # If the settings say to skip the launcher, do so.
-    if vars_to_load[10]:
+    if vars_to_load[11]:
         os.chdir("data")
         sys.path.append(os.getcwd())
         runpy.run_path("BulletHeck.py")
     else:
         file = open("settings.pickle", mode="w+b")
         settings_exist = True
-except (FileNotFoundError, EOFError):
+except (FileNotFoundError, EOFError, IndexError):
+    # If settings.pickle doesn't exist or is the wrong size, create a new one.
     file = open("settings.pickle", mode="w+b")
     file = open("settings.pickle", mode="r+b")
     settings_exist = False
