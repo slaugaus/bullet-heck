@@ -1,4 +1,4 @@
-#  Featuring the real graphics! Wow!
+# Featuring the real graphics! Wow!
 import pygame
 from pygame.sprite import Group
 from settings import Settings

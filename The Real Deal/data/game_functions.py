@@ -214,23 +214,34 @@ def spawn_enemy(settings, screen, enemies, images, id):
 def spawn_enemies(settings, screen, enemies, images, id, stats):
     """Spawn enemies based on a timer, random numbers, and the game level."""
     stats.enemy_timer -= 1
-    if stats.enemy_timer == 0:
-        if stats.game_level == 0:
-            spawn_enemy(settings, screen, enemies, images, 1)
-        if stats.game_level == 1:
-            spawn_enemy(settings, screen, enemies, images, 1)
-            spawn_enemy(settings, screen, enemies, images, 1)
-        if stats.game_level == 2:
-            spawn_enemy(settings, screen, enemies, images, 2)
+    if stats.enemy_timer <= 0:
+        if stats.game_level <= 6:
+            id = random.randint(1, stats.game_level)
+        else:
+            id = random.randint(1, 6)
+        spawn_enemy(settings, screen, enemies, images, id)
         stats.enemy_timer = 120 + random.randint(-10, 10)
 
 
 def manage_game_level(settings, stats):
-    """Manage the game level based on the score."""
-    if stats.score >= 250:
-        stats.game_level = 1
-    if stats.score >= 1000:
-        stats.game_level = 2
+    """Manage the game level (highest spawnable enemy ID) based on score."""
+    if stats.game_level < 6:
+        # Hardcoded curve
+        if stats.score >= 250:
+            stats.game_level = 2
+        if stats.score >= 1000:
+            stats.game_level = 3
+        if stats.score >= 1500:
+            stats.game_level = 4
+        if stats.score >= 2000:
+            stats.game_level = 5
+        if stats.score >= 2500:
+            stats.game_level = 6
+            stats.next_score = 3500
+    elif stats.score >= stats.next_score:
+        # Increment level for each additional 1000 points
+        stats.next_score += 1000
+        stats.game_level += 1
 
 
 def explode(settings, entity, screen, images, explosions, sounds, size="s"):

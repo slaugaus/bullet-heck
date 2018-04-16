@@ -71,6 +71,7 @@ def run_game():
         clock.tick(settings.fps_limit)
         if settings.show_fps:
             stats.fps = clock.get_fps()
+        print(stats.enemy_timer)
 
 
 run_game()

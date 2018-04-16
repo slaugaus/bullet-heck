@@ -28,7 +28,8 @@ class Stats():
         self.ship_level = 0
         self.ship_inv = False
         self.ship_inv_timer = 1
-        self.game_level = 0
+        self.game_level = 1
+        self.next_score = 0
         self.enemy_timer = self.settings.enemy_timer
 
     def update_high_score(self, hud):
