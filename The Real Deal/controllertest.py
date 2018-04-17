@@ -14,7 +14,9 @@ WHITE = (255, 255, 255)
 class TextPrint:
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 20)
+        # same as loading (None, 20),
+        # but pyinstaller doesn't pack the file for that
+        self.font = pygame.font.Font("data/assets/freesansbold.ttf", 13)
 
     def print(self, screen, textString):
         textBitmap = self.font.render(textString, True, BLACK)
