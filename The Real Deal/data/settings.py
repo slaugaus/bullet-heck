@@ -50,4 +50,5 @@ class Settings():
         self.enemy_fire_cooldown = [-1, -1, 90, 90, 90, 90]
         self.enemy_points = [50, 100, 25, 75, 75, 75]
         self.enemy_timer = 150  # 2.5 seconds before first enemy
+        self.enemy_timer_min = 15
         self.pickup_chance = 15  # percent

@@ -31,12 +31,17 @@ except (FileNotFoundError, EOFError, IndexError):
 main_win = tk.Tk()
 main_win.title("Bullet Heck! Launcher")
 main_win.resizable(False, False)
-main_win.iconbitmap("data/assets/icon/combined.ico")
 sett_win = tk.Toplevel()
 sett_win.title("Settings")
 sett_win.protocol("WM_DELETE_WINDOW", sett_win.withdraw)
 sett_win.resizable(False, False)
-sett_win.iconbitmap("data/assets/icon/combined.ico")
+# Set the icons depending on the OS. Macs don't get one.
+if sys.platform == "win32":
+    main_win.iconbitmap("data/assets/icon/combined.ico")
+    sett_win.iconbitmap("data/assets/icon/combined.ico")
+elif sys.platform == "linux":
+    main_win.iconbitmap("@data/assets/icon/icon_16.xbm")
+    sett_win.iconbitmap("@data/assets/icon/icon_16.xbm")
 # Hide the settings window by default.
 sett_win.withdraw()
 # Variables that will be written to settings

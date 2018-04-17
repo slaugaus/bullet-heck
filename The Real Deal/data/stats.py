@@ -31,6 +31,7 @@ class Stats():
         self.game_level = 1
         self.next_score = 0
         self.enemy_timer = self.settings.enemy_timer
+        self.next_timer = 120
 
     def update_high_score(self, hud):
         """Update the high score if it's beaten."""

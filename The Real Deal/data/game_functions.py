@@ -220,7 +220,7 @@ def spawn_enemies(settings, screen, enemies, images, id, stats):
         else:
             id = random.randint(1, 6)
         spawn_enemy(settings, screen, enemies, images, id)
-        stats.enemy_timer = 120 + random.randint(-10, 10)
+        stats.enemy_timer = stats.next_timer + random.randint(-5, 5)
 
 
 def manage_game_level(settings, stats):
@@ -229,18 +229,25 @@ def manage_game_level(settings, stats):
         # Hardcoded curve
         if stats.score >= 250:
             stats.game_level = 2
+            stats.next_timer = 110
         if stats.score >= 1000:
             stats.game_level = 3
+            stats.next_timer = 100
         if stats.score >= 1500:
             stats.game_level = 4
+            stats.next_timer = 90
         if stats.score >= 2000:
             stats.game_level = 5
+            stats.next_timer = 80
         if stats.score >= 2500:
             stats.game_level = 6
+            stats.next_timer = 70
             stats.next_score = 3500
     elif stats.score >= stats.next_score:
-        # Increment level for each additional 1000 points
-        stats.next_score += 1000
+        # Increment level and decrement timer for each additional 500 points
+        if stats.next_timer > settings.enemy_timer_min:
+            stats.next_timer -= 5
+        stats.next_score += 500
         stats.game_level += 1
 
 

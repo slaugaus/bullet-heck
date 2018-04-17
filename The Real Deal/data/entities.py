@@ -124,7 +124,8 @@ class Ship(Sprite):
                 self.centery += self.an_up * self.speed
                 self.animdir = 1
                 self.cancel_digital()
-            if self.an_down > 0 and self.hbrect.bottom<settings.screen_height:
+            if self.an_down > 0 and (self.hbrect.bottom <
+                                     settings.screen_height):
                 self.centery += self.an_down * self.speed
                 self.animdir = -1
                 self.cancel_digital()
@@ -185,7 +186,6 @@ class Enemy(Sprite):
         self.images = images.enemy[self.id-1]
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.x = float(self.rect.x)
         self.point_value = settings.enemy_points[self.id-1]
         # Collision info
         if self.id == 2:
@@ -201,8 +201,7 @@ class Enemy(Sprite):
     def update(self):
         self.animate()
         self.image = self.images[self.index]
-        self.x -= self.settings.enemy_speed[self.id-1]
-        self.rect.x = self.x
+        self.rect.x -= self.settings.enemy_speed[self.id-1]
 
     def blitme(self):
         """Draw the enemy."""
@@ -224,8 +223,6 @@ class EnemyBullet(Sprite):
         self.offset = pygame.math.Vector2(offset, 0)
         self.offset.rotate_ip(self.angle)
         [self.x_offset, self.y_offset] = self.offset
-        self.color_int = settings.white
-        self.color_ext = settings.red
         self.vector = pygame.math.Vector2(0, 0)
         self.vector.from_polar((self.speed, self.angle))
         [self.xspeed, self.yspeed] = self.vector
@@ -261,15 +258,10 @@ class Bullet(Sprite):
         # If told to, offset the bullet from the usual value.
         self.rect.centery = ship.rect.centery + self.y_offset
         self.rect.right = ship.rect.right
-        # Float the bullet's position, making it a decimal value.
-        self.x = float(self.rect.x)
 
     def update(self):
         """Move the bullet right."""
-        # Update position
-        self.x += self.speed
-        # Update the rect position.
-        self.rect.x = self.x
+        self.rect.x += self.speed
 
     def draw_bullet(self):
         """Draw the bullet."""
@@ -347,8 +339,11 @@ class Pickup(Sprite):
         self.center = self.rect.center
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-        self.xspeed = random.randint(-5, 1)
-        self.yspeed = random.randint(-2, 2)
+        self.speed = random.randint(2, 5)
+        self.angle = random.randint(0, 359)
+        self.vector = pygame.math.Vector2(0, 0)
+        self.vector.from_polar((self.speed, self.angle))
+        [self.xspeed, self.yspeed] = self.vector
 
     def update(self):
         self.index += 1
@@ -356,9 +351,9 @@ class Pickup(Sprite):
             self.index = 0
         self.image = self.images[self.index]
         self.x += self.xspeed
-        self.y += self.yspeed
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.y -= self.yspeed
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
