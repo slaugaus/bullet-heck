@@ -1,7 +1,8 @@
 # Austin S.'s Senior Project  
 Proof of Austin Slaughter's senior project, titled "Making a 2D Video Game with Python."  
 Credits:  
-Sound effects obtained from https://www.zapsplat.com
+Sound effects obtained from https://www.zapsplat.com  
+Font is "Uno Estado" by Dan Zadorozny (Iconian Fonts)  
 
 "Space Fighter Loop"  
 Kevin MacLeod (incompetech.com)  
