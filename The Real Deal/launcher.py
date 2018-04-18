@@ -42,6 +42,9 @@ if sys.platform == "win32":
 elif sys.platform == "linux":
     main_win.iconbitmap("@data/assets/icon/icon_16.xbm")
     sett_win.iconbitmap("@data/assets/icon/icon_16.xbm")
+else:
+    main_win.iconbitmap("data/assets/icon/combined.icns")
+    sett_win.iconbitmap("data/assets/icon/combined.icns")
 # Hide the settings window by default.
 sett_win.withdraw()
 # Variables that will be written to settings
@@ -147,7 +150,7 @@ def close():
 def show_credits():
     msg = ("Sound effects obtained from www.zapsplat.com\n"
            "Explosion graphics created at www.explosiongenerator.com\n"
-           "Font is \"Uno Estado\" by Dan Zadorozny (Iconian Fonts)\n"
+           "Font is \"Uno Estado\" by Dan Zadorozny (Iconian Fonts)\n\n"
            "\"Space Fighter Loop\"\n"
            "Kevin MacLeod (incompetech.com)\n"
            "Licensed under Creative Commons: By Attribution 3.0 License\n"

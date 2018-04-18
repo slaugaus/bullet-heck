@@ -35,7 +35,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
 def check_repeat_keys(settings, screen, ship, bullets, stats, gamepad, sounds):
     """Check for keys that will repeat an action when held."""
     keys = pygame.key.get_pressed()
-    if not ship.dodge_mode:
+    if ship.ready and not ship.dodge_mode:
         if settings.autofire and stats.bullet_cooldown == 0:
             fire_bullet(settings, screen, ship, bullets, sounds, stats)
             stats.bullet_cooldown = settings.bullet_cooldown
@@ -466,7 +466,9 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         stats.ship_health -= 1
         if stats.ship_level > 0:
             sounds.leveldown.play()
-            stats.ship_level -= 1
+            stats.ship_level -= 2
+            if stats.ship_level < 0:
+                stats.ship_level = 0
         stats.ship_inv_timer = settings.ship_mercy_inv
         sounds.ship_hit.play()
     elif stats.ship_lives > 0:
