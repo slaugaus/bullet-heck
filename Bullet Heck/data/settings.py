@@ -13,7 +13,7 @@ class Settings():
             vars = pickle.load(file)
             [self.gamepad_connected, self.screen_res, self.gamepad_id,
              self.deadzone, self.axis_x, self.axis_y, self.hat_id, self.but_A,
-             self.but_X, self.but_S, self.show_fps, skip_launcher,
+             self.but_X, self.but_Y, self.but_S, self.show_fps, skip_launcher,
              self.autofire, self.mute_music, self.mute_sound] = vars
         except (FileNotFoundError, EOFError, ValueError):
             print("ERROR: Couldn't load from settings.pickle!\n"

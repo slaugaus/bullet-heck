@@ -75,7 +75,7 @@ def check_keydown_events(event, settings, ship, stats, splash, hud):
         ship.dodge_mode = True
     if event.key == pygame.K_a:
         settings.autofire = True if settings.autofire is False else False
-    if event.key == pygame.K_p:
+    if event.key == pygame.K_ESCAPE:
         stats.game_active = True if stats.game_active is False else False
         if stats.game_active:
             pygame.mouse.set_visible(False)
@@ -89,7 +89,7 @@ def check_keydown_events(event, settings, ship, stats, splash, hud):
 
 
 def check_debug_keys(event, settings, screen, enemies, images, stats):
-    if event.key == pygame.K_ESCAPE:
+    if event.key == pygame.K_q:
         stats.save_high_score()
         stats.done = True
     # There's definitely a better way to do this, but none of these will be in
@@ -167,6 +167,8 @@ def check_hat_events(gamepad, ship, settings):
 def check_joydown_events(event, settings, ship, stats, splash, hud):
     if event.button == settings.but_X:
         ship.dodge_mode = True
+    if event.button == settings.but_Y:
+        settings.autofire = True if settings.autofire is False else False
     elif event.button == settings.but_S:
         stats.game_active = True if stats.game_active is False else False
         if stats.game_active:

@@ -41,7 +41,7 @@ pygame.init()
 size = [500, 700]
 screen = pygame.display.set_mode(size)
 
-pygame.display.set_caption("My Game")
+pygame.display.set_caption("Controller Test")
 
 # Loop until the user clicks the close button.
 done = False
