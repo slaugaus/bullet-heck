@@ -16,7 +16,7 @@ class TextPrint:
         self.reset()
         # same as loading (None, 20),
         # but pyinstaller doesn't pack the file for that
-        self.font = pygame.font.Font("data/assets/freesansbold.ttf", 13)
+        self.font = pygame.font.Font("data/fonts/freesansbold.ttf", 13)
 
     def print(self, screen, textString):
         textBitmap = self.font.render(textString, True, BLACK)

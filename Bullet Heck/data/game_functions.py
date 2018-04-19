@@ -15,7 +15,8 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
             stats.done = True
         if event.type == pygame.KEYDOWN:
             check_keydown_events(event, settings, ship, stats, splash, hud)
-            check_debug_keys(event, settings, screen, enemies, images, stats)
+            # Uncomment to enable debug keys!
+            # check_debug_keys(event, settings, screen, enemies, images, stats)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -23,7 +24,7 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
         elif event.type == pygame.JOYHATMOTION:
             check_hat_events(gamepad, ship, settings)
         elif event.type == pygame.JOYBUTTONDOWN:
-            check_joydown_events(event, settings, ship, stats, splash)
+            check_joydown_events(event, settings, ship, stats, splash, hud)
         elif event.type == pygame.JOYBUTTONUP:
             if event.button == settings.but_X:
                 ship.dodge_mode = False
@@ -92,7 +93,7 @@ def check_debug_keys(event, settings, screen, enemies, images, stats):
         stats.save_high_score()
         stats.done = True
     # There's definitely a better way to do this, but none of these will be in
-    # the final product anyway
+    # the final product (by default) anyway
     if event.key == pygame.K_1:
         spawn_enemy(settings, screen, enemies, images, 1)
     if event.key == pygame.K_2:

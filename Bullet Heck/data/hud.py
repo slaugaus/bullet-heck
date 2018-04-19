@@ -48,8 +48,8 @@ class HUD():
         self.stats = stats
         self.images = images
         self.text_color = settings.white
-        self.font = pygame.font.Font("assets/unoestado.ttf", 32)
-        self.font_small = pygame.font.Font("assets/unoestado.ttf", 16)
+        self.font = pygame.font.Font("fonts/unoestado.ttf", 32)
+        self.font_small = pygame.font.Font("fonts/unoestado.ttf", 16)
         self.healthbar = Statbar(settings, screen, settings.red,
                                  stats.ship_health, settings.ship_health)
         self.invbar = Statbar(settings, screen, settings.blue,
@@ -132,7 +132,7 @@ class SplashScreen():
         self.logo_rect = self.logo.get_rect()
         self.button_color = settings.green
         self.text_color = settings.white
-        self.font = pygame.font.Font("assets/unoestado.ttf", 32)
+        self.font = pygame.font.Font("fonts/unoestado.ttf", 32)
         self.dimmer = pygame.Surface((settings.screen_width,
                                       settings.screen_height))
         self.dimmer.set_alpha(128)

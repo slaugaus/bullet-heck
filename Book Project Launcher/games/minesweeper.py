@@ -21,7 +21,7 @@ def create_minefield(minefield):
                 rowList.append(0)
                 squaresToClear = squaresToClear + 1
         minefield.append(rowList)
-    printfield(minefield)
+    # printfield(minefield)
 def printfield(minefield):
     print("Here's the solution, you cheater:")
     for rowList in minefield:

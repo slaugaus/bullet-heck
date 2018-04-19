@@ -7,9 +7,11 @@ import runpy
 import sys
 import os
 from PIL import Image, ImageTk
-# Libs used by the target file (needed for compilation)
+# Libs used by the target file (needed for PyInstaller)
 import pygame
 import random
+import zipfile
+import io
 # Create and/or load settings.pickle
 try:
     file = open("settings.pickle", mode="r+b")
@@ -35,16 +37,16 @@ sett_win = tk.Toplevel()
 sett_win.title("Settings")
 sett_win.protocol("WM_DELETE_WINDOW", sett_win.withdraw)
 sett_win.resizable(False, False)
-# Set the icons depending on the OS. Macs don't get one.
+# Set the icons depending on the OS.
 if sys.platform == "win32":
-    main_win.iconbitmap("data/assets/icon/combined.ico")
-    sett_win.iconbitmap("data/assets/icon/combined.ico")
+    main_win.iconbitmap("data/images/icon/combined.ico")
+    sett_win.iconbitmap("data/images/icon/combined.ico")
 elif sys.platform == "linux":
-    main_win.iconbitmap("@data/assets/icon/icon_16.xbm")
-    sett_win.iconbitmap("@data/assets/icon/icon_16.xbm")
+    main_win.iconbitmap("@data/images/icon/icon_16.xbm")
+    sett_win.iconbitmap("@data/images/icon/icon_16.xbm")
 else:
-    main_win.iconbitmap("data/assets/icon/combined.icns")
-    sett_win.iconbitmap("data/assets/icon/combined.icns")
+    main_win.iconbitmap("data/images/icon/combined.icns")
+    sett_win.iconbitmap("data/images/icon/combined.icns")
 # Hide the settings window by default.
 sett_win.withdraw()
 # Variables that will be written to settings
@@ -171,7 +173,7 @@ main_win.protocol("WM_DELETE_WINDOW", close)
 
 # Define all of the widgets.
 # Main window
-title = Image.open("data/assets/logo.png")
+title = Image.open("data/images/logo.png")
 title = title.resize((400, 225), resample=Image.BILINEAR)
 title = ImageTk.PhotoImage(title)
 logo = ttk.Label(main_win, image=title)
