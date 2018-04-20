@@ -6,7 +6,6 @@ import pickle
 import runpy
 import sys
 import os
-from PIL import Image, ImageTk
 # Libs used by the target file (needed for PyInstaller)
 import pygame
 import random
@@ -178,9 +177,7 @@ main_win.protocol("WM_DELETE_WINDOW", close)
 
 # Define all of the widgets.
 # Main window
-title = Image.open("data/images/logo.png")
-title = title.resize((400, 225), resample=Image.BILINEAR)
-title = ImageTk.PhotoImage(title)
+title = tk.PhotoImage(file="data/images/logo_half.gif")
 logo = ttk.Label(main_win, image=title)
 logo.image = title  # necessary in case the image gets garbage-collected
 but_play = ttk.Button(main_win, text="Play Bullet Heck!", command=launch)
