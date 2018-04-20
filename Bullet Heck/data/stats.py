@@ -9,9 +9,9 @@ class Stats():
         try:
             self.file = open("../highscore.pickle", mode="r+b")
             self.high_score = pickle.load(self.file)
+            self.file = open("../highscore.pickle", mode="w+b")
         except (FileNotFoundError, EOFError):
             self.file = open("../highscore.pickle", mode="w+b")
-            self.file = open("../highscore.pickle", mode="r+b")
             self.high_score = 0
         self.settings = settings
         self.game_active = False
@@ -30,6 +30,7 @@ class Stats():
         self.ship_inv_timer = 1
         self.game_level = 1
         self.next_score = 0
+        self.next_score_increment = 1000
         self.enemy_timer = self.settings.enemy_timer
         self.next_timer = 120
 
@@ -39,6 +40,7 @@ class Stats():
             self.high_score = self.score
             hud.prep_high_score()
 
-    def save_high_score(self):
+    def save_high_score(self, hud):
         """Save the high score to a file."""
+        self.update_high_score(hud)
         pickle.dump(self.high_score, self.file)

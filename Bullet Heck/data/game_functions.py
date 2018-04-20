@@ -11,12 +11,13 @@ def check_events(settings, screen, ship, gamepad, bullets, stats, sounds,
                           sounds)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            stats.save_high_score()
+            stats.save_high_score(hud)
             stats.done = True
         if event.type == pygame.KEYDOWN:
             check_keydown_events(event, settings, ship, stats, splash, hud)
             # Uncomment to enable debug keys!
-            # check_debug_keys(event, settings, screen, enemies, images, stats)
+            # check_debug_keys(event, settings, screen, enemies, images, stats,
+            #                  hud)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, settings, ship)
         elif event.type == pygame.JOYAXISMOTION:
@@ -88,9 +89,9 @@ def check_keydown_events(event, settings, ship, stats, splash, hud):
             splash.prep_msg("Resume")
 
 
-def check_debug_keys(event, settings, screen, enemies, images, stats):
+def check_debug_keys(event, settings, screen, enemies, images, stats, hud):
     if event.key == pygame.K_q:
-        stats.save_high_score()
+        stats.save_high_score(hud)
         stats.done = True
     # There's definitely a better way to do this, but none of these will be in
     # the final product (by default) anyway
@@ -218,12 +219,9 @@ def spawn_enemies(settings, screen, enemies, images, id, stats):
     """Spawn enemies based on a timer, random numbers, and the game level."""
     stats.enemy_timer -= 1
     if stats.enemy_timer <= 0:
-        if stats.game_level <= 6:
-            id = random.randint(1, stats.game_level)
-        else:
-            id = random.randint(1, 6)
+        id = random.randint(1, stats.game_level)
         spawn_enemy(settings, screen, enemies, images, id)
-        stats.enemy_timer = stats.next_timer + random.randint(-5, 5)
+        stats.enemy_timer = stats.next_timer
 
 
 def manage_game_level(settings, stats):
@@ -233,25 +231,25 @@ def manage_game_level(settings, stats):
         if stats.score >= 250:
             stats.game_level = 2
             stats.next_timer = 110
-        if stats.score >= 1000:
+        if stats.score >= 750:
             stats.game_level = 3
-            stats.next_timer = 100
-        if stats.score >= 1500:
-            stats.game_level = 4
             stats.next_timer = 90
-        if stats.score >= 2000:
-            stats.game_level = 5
+        if stats.score >= 1250:
+            stats.game_level = 4
             stats.next_timer = 80
+        if stats.score >= 1750:
+            stats.game_level = 5
+            stats.next_timer = 70
         if stats.score >= 2500:
             stats.game_level = 6
-            stats.next_timer = 70
+            stats.next_timer = 60
             stats.next_score = 3500
     elif stats.score >= stats.next_score:
-        # Increment level and decrement timer for each additional 500 points
+        # Decrement timer and scale the next score
         if stats.next_timer > settings.enemy_timer_min:
-            stats.next_timer -= 5
-        stats.next_score += 500
-        stats.game_level += 1
+            stats.next_timer -= 10
+        stats.next_score_increment *= 1.2
+        stats.next_score += int(stats.next_score_increment)
 
 
 def explode(settings, entity, screen, images, explosions, sounds, size="s"):
@@ -469,9 +467,7 @@ def damage_ship(settings, stats, sounds, ship, hud, screen, images, explosions,
         stats.ship_health -= 1
         if stats.ship_level > 0:
             sounds.leveldown.play()
-            stats.ship_level -= 2
-            if stats.ship_level < 0:
-                stats.ship_level = 0
+            stats.ship_level -= 1
         stats.ship_inv_timer = settings.ship_mercy_inv
         sounds.ship_hit.play()
     elif stats.ship_lives > 0:

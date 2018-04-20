@@ -212,7 +212,7 @@ class EnemyBullet(Sprite):
     """Manages enemy bullets."""
 
     def __init__(self, settings, screen, images, start, angle=0,
-                 offset=0, speed=8):
+                 offset=0, speed=9):
         """Create an enemy bullet at the specified location (start).
            The offset is relative to the angle."""
         super().__init__()

@@ -17,7 +17,7 @@ try:
     file = open("settings.pickle", mode="r+b")
     vars_to_load = pickle.load(file)
     # If the settings say to skip the launcher, do so.
-    if vars_to_load[11]:
+    if vars_to_load[12]:
         os.chdir("data")
         sys.path.append(os.getcwd())
         runpy.run_path("BulletHeck.py")
@@ -42,9 +42,12 @@ if sys.platform == "win32":
     main_win.iconbitmap("data/images/icon/combined.ico")
     sett_win.iconbitmap("data/images/icon/combined.ico")
 elif sys.platform == "linux":
-    main_win.iconbitmap("@data/images/icon/icon_16.xbm")
-    sett_win.iconbitmap("@data/images/icon/icon_16.xbm")
-else:
+    # Ensure that the icon is the correct color.
+    icon = tk.BitmapImage("@data/images/icon/icon_16.xbm", foreground="black",
+                          background="white")
+    main_win.iconbitmap(icon)
+    sett_win.iconbitmap(icon)
+elif sys.platform == "darwin":
     main_win.iconbitmap("data/images/icon/combined.icns")
     sett_win.iconbitmap("data/images/icon/combined.icns")
 # Hide the settings window by default.

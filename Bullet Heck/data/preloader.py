@@ -28,11 +28,11 @@ class Sounds():
             self.leveldown = self.null
         if not settings.mute_music:
             pygame.mixer.music.load("audio/bgm.ogg")
-            pygame.mixer.music.set_volume(0.4)
-        self.pew.set_volume(0.25)
+            pygame.mixer.music.set_volume(0.3)
+        self.pew.set_volume(0.2)
         self.boom_med.set_volume(0.3)
-        self.boom_small.set_volume(0.75)
-        self.enemy_hit.set_volume(0.1)
+        self.boom_small.set_volume(0.7)
+        self.enemy_hit.set_volume(0.05)
         self.ship_hit.set_volume(0.5)
         self.levelup.set_volume(0.5)
 

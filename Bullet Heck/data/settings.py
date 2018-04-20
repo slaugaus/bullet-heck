@@ -45,10 +45,10 @@ class Settings():
         self.bullet_limit = 100
         self.bullet_cooldown = 5  # frames
         # Enemies
-        self.enemy_speed = [4, 3, 3, 2, 2, 2]
-        self.enemy_health = [3, 9, 2, 3, 3, 3]
+        self.enemy_speed = [5, 4, 5, 3, 3, 3]
+        self.enemy_health = [4, 9, 3, 4, 4, 4]
         self.enemy_fire_cooldown = [-1, -1, 90, 90, 90, 90]
         self.enemy_points = [50, 100, 25, 75, 75, 75]
         self.enemy_timer = 150  # 2.5 seconds before first enemy
-        self.enemy_timer_min = 15
-        self.pickup_chance = 15  # percent
+        self.enemy_timer_min = 20
+        self.pickup_chance = 20  # percent
