@@ -1,3 +1,4 @@
+[Click here for install instructions!](https://github.com/slaugaus/seniorproject/wiki/Install-Instructions)
 # Austin S.'s Senior Project  
 Proof of Austin Slaughter's senior project, titled "Making a 2D Video Game with Python."  
 Credits:  
