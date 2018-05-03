@@ -1,7 +1,9 @@
-## [Click here for install instructions!](https://github.com/slaugaus/seniorproject/wiki/Install-Instructions)
-# Austin S.'s Senior Project  
-Proof of Austin Slaughter's senior project, titled "Making a 2D Video Game with Python."  
-Credits:  
+## [Click here for install instructions!](https://github.com/slaugaus/seniorproject/wiki/Install-Instructions)  
+![Poster](wiki_images/poster.png)
+# Austin Slaughter's Senior Project  
+Proof of Austin Slaughter's senior project, "Making a 2D Video Game with Python."  
+  
+### Credits:  
 Sound effects obtained from https://www.zapsplat.com  
 Font is "Uno Estado" by Dan Zadorozny (Iconian Fonts)  
 
