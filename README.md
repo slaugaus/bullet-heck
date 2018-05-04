@@ -1,7 +1,7 @@
 ## [Click here for install instructions!](https://github.com/slaugaus/seniorproject/wiki/Install-Instructions)  
 ![Poster](wiki_images/poster.png)
 # Austin Slaughter's Senior Project  
-Proof of Austin Slaughter's senior project, "Making a 2D Video Game with Python."  
+Proof of Austin Slaughter's senior project, "Creating a 2D Video Game with Python."  
   
 ### Credits:  
 Sound effects obtained from https://www.zapsplat.com  
